@@ -1,0 +1,93 @@
+# 数据库配置文件
+config/database.json
+.env
+.env.local
+.env.production
+
+# 数据库备份文件
+*.sql.bak
+*.dump
+backups/
+oldscripts/
+
+# 日志文件
+*.log
+logs/
+
+# 临时文件
+*.tmp
+*.temp
+*~
+
+# 编辑器文件
+.vscode/launch.json
+.vscode/c_cpp_properties.json
+.vscode/ipch/
+
+# 操作系统文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 依赖文件
+node_modules/
+vendor/
+composer.lock
+package-lock.json
+
+# 构建输出
+build/
+dist/
+out/
+
+# IDE 文件
+.idea/
+*.swp
+*.swo
+*.iml
+*.sublime-project
+*.sublime-workspace
+
+# 测试文件
+test_*.sql
+*_test.sql
+test_results/
+coverage/
+
+# 生产环境密钥
+private_keys/
+certificates/
+ssl/
+
+# 缓存文件
+*.cache
+.cache/
+.npm/
+.yarn-integrity
+
+# 压缩文件
+*.zip
+*.tar
+*.gz
+*.rar
+
+# 文档生成
+docs/generated/
+*.pdf
+
+# 性能分析
+*.prof
+*.perf
+
+# 配置模板（保留模板，忽略实际配置）
+!config/*.template.json
+!config/*.example.json
+
+# 本地开发工具
+.phpstorm.meta.php
+_ide_helper.php
+_ide_helper_models.php 

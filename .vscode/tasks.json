@@ -1,0 +1,47 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "初始化数据库",
+            "type": "shell",
+            "command": "sqlite3",
+            "args": ["database/data/main.db", "<", "scripts/init_db.sql"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "重置数据库",
+            "type": "shell",
+            "command": "sqlite3",
+            "args": ["database/data/main.db", "<", "scripts/reset_db.sql"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "运行查询",
+            "type": "shell",
+            "command": "sqlite3",
+            "args": ["database/data/main.db", "<", "${file}"],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        }
+    ]
+} 

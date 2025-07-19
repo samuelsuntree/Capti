@@ -1,0 +1,17 @@
+{
+    "recommendations": [
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-mysql",
+        "bradymholt.pgformatter",
+        "ms-mssql.mssql",
+        "formulahendry.vscode-mysql",
+        "cweijan.vscode-mysql-client2",
+        "inferrinizzard.prettier-sql-vscode",
+        "humao.rest-client",
+        "redhat.vscode-yaml",
+        "ms-vscode.vscode-json"
+    ],
+    "unwantedRecommendations": [
+        "ms-vscode.vscode-json-language-features"
+    ]
+} 

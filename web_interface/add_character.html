@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>添加角色 - 游戏角色管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .nav {
+            background: #34495e;
+            padding: 0;
+        }
+        .nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+        }
+        .nav li {
+            margin: 0 5px;
+        }
+        .nav a {
+            display: block;
+            padding: 15px 25px;
+            color: white;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        .nav a:hover, .nav a.active {
+            background: #2c3e50;
+        }
+        .content {
+            padding: 40px;
+        }
+        .form-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+        .form-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        .form-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        .form-group small {
+            color: #666;
+            font-size: 12px;
+        }
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f8f9fa;
+            transition: background 0.3s;
+        }
+        .checkbox-item:hover {
+            background: #e9ecef;
+        }
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+        }
+        .checkbox-item.checked {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+        .trait-positive { border-left: 4px solid #28a745; }
+        .trait-negative { border-left: 4px solid #dc3545; }
+        .trait-neutral { border-left: 4px solid #6c757d; }
+        .slider-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .slider-item {
+            text-align: center;
+        }
+        .slider-item input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+        }
+        .slider-value {
+            font-weight: bold;
+            color: #3498db;
+            font-size: 1.2em;
+        }
+        .button {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px 5px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        .button.success {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        }
+        .button.secondary {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+        }
+        .button-group {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            display: none;
+        }
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .random-btn {
+            background: #e74c3c;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .availability-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #ccc;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .toggle-switch.active {
+            background: #2ecc71;
+        }
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        .toggle-switch.active::after {
+            transform: translateX(30px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>➕ 添加新角色</h1>
+            <p>创建一个新的游戏角色</p>
+        </div>
+        
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html">主页</a></li>
+                <li><a href="add_character.html" class="active">添加角色</a></li>
+                <li><a href="view_characters.php">查看角色</a></li>
+            </ul>
+        </nav>
+        
+        <div class="content">
+            <div class="alert" id="alert"></div>
+            
+            <form id="characterForm" class="form-container" onsubmit="return submitCharacter(event)">
+                <h2>角色信息</h2>
+                
+                <div class="form-grid">
+                    <!-- 基本信息 -->
+                    <div class="form-section">
+                        <h3>🎭 基本信息</h3>
+                        <div class="form-group">
+                            <label for="characterName">角色名称 *</label>
+                            <input type="text" id="characterName" name="characterName" required>
+                            <small>角色的完整名称，例如：龙血战士·阿克斯</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="displayName">显示名称</label>
+                            <input type="text" id="displayName" name="displayName">
+                            <small>简短的显示名称，例如：阿克斯</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="characterClass">职业 *</label>
+                            <select id="characterClass" name="characterClass" required>
+                                <option value="">选择职业</option>
+                                <option value="warrior">战士 (Warrior)</option>
+                                <option value="trader">商人 (Trader)</option>
+                                <option value="explorer">探险家 (Explorer)</option>
+                                <option value="scholar">学者 (Scholar)</option>
+                                <option value="mystic">法师 (Mystic)</option>
+                                <option value="survivor">生存者 (Survivor)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="rarity">稀有度 *</label>
+                            <select id="rarity" name="rarity" required onchange="updateCostsByRarity()">
+                                <option value="">选择稀有度</option>
+                                <option value="common">普通 (Common)</option>
+                                <option value="uncommon">不凡 (Uncommon)</option>
+                                <option value="rare">稀有 (Rare)</option>
+                                <option value="epic">史诗 (Epic)</option>
+                                <option value="legendary">传奇 (Legendary)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="hireCost">雇佣费用</label>
+                            <input type="number" id="hireCost" name="hireCost" min="0" step="100" value="1000">
+                            <small>雇佣该角色所需的费用</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="maintenanceCost">维护费用</label>
+                            <input type="number" id="maintenanceCost" name="maintenanceCost" min="0" step="10" value="100">
+                            <small>每日维护费用</small>
+                        </div>
+                        <div class="form-group">
+                            <label>可用状态</label>
+                            <div class="availability-toggle">
+                                <span>不可用</span>
+                                <div class="toggle-switch active" id="availabilityToggle" onclick="toggleAvailability()"></div>
+                                <span>可用</span>
+                                <input type="hidden" id="isAvailable" name="isAvailable" value="1">
+                            </div>
+                            <small>设置角色是否可被雇佣</small>
+                        </div>
+                    </div>
+
+                    <!-- 基础属性 -->
+                    <div class="form-section">
+                        <h3>⚔️ 基础属性</h3>
+                        <div class="slider-group">
+                            <div class="slider-item">
+                                <label>💪 力量</label>
+                                <input type="range" id="strength" name="strength" min="1" max="20" value="10" oninput="updateSliderValue(this)">
+                                <div class="slider-value" id="strengthValue">10</div>
+                            </div>
+                            <div class="slider-item">
+                                <label>❤️ 体力</label>
+                                <input type="range" id="vitality" name="vitality" min="1" max="20" value="10" oninput="updateSliderValue(this)">
+                                <div class="slider-value" id="vitalityValue">10</div>
+                            </div>
+                            <div class="slider-item">
+                                <label>⚡ 敏捷</label>
+                                <input type="range" id="agility" name="agility" min="1" max="20" value="10" oninput="updateSliderValue(this)">
+                                <div class="slider-value" id="agilityValue">10</div>
+                            </div>
+                            <div class="slider-item">
+                                <label>🧠 智力</label>
+                                <input type="range" id="intelligence" name="intelligence" min="1" max="20" value="10" oninput="updateSliderValue(this)">
+                                <div class="slider-value" id="intelligenceValue">10</div>
+                            </div>
+                            <div class="slider-item">
+                                <label>✨ 信仰</label>
+                                <input type="range" id="faith" name="faith" min="1" max="20" value="10" oninput="updateSliderValue(this)">
+                                <div class="slider-value" id="faithValue">10</div>
+                            </div>
+                            <div class="slider-item">
+                                <label>🍀 幸运</label>
+                                <input type="range" id="luck" name="luck" min="1" max="20" value="10" oninput="updateSliderValue(this)">
+                                <div class="slider-value" id="luckValue">10</div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-top: 15px;">
+                            <button type="button" class="random-btn" onclick="randomizeAttributes()">🎲 随机生成</button>
+                        </div>
+                    </div>
+
+                    <!-- 精神属性 -->
+                    <div class="form-section">
+                        <h3>🧘 精神属性</h3>
+                        <div class="slider-group">
+                            <div class="slider-item">
+                                <label>🛡️ 忠诚</label>
+                                <input type="range" id="loyalty" name="loyalty" min="1" max="100" value="50" oninput="updateSliderValue(this)">
+                                <div class="slider-value" id="loyaltyValue">50</div>
+                            </div>
+                            <div class="slider-item">
+                                <label>⚔️ 勇气</label>
+                                <input type="range" id="courage" name="courage" min="1" max="100" value="50" oninput="updateSliderValue(this)">
+                                <div class="slider-value" id="courageValue">50</div>
+                            </div>
+                            <div class="slider-item">
+                                <label>⏳ 耐心</label>
+                                <input type="range" id="patience" name="patience" min="1" max="100" value="50" oninput="updateSliderValue(this)">
+                                <div class="slider-value" id="patienceValue">50</div>
+                            </div>
+                            <div class="slider-item">
+                                <label>💰 贪婪</label>
+                                <input type="range" id="greed" name="greed" min="1" max="100" value="50" oninput="updateSliderValue(this)">
+                                <div class="slider-value" id="greedValue">50</div>
+                            </div>
+                            <div class="slider-item">
+                                <label>📚 智慧</label>
+                                <input type="range" id="wisdom" name="wisdom" min="1" max="100" value="50" oninput="updateSliderValue(this)">
+                                <div class="slider-value" id="wisdomValue">50</div>
+                            </div>
+                            <div class="slider-item">
+                                <label>🎭 魅力</label>
+                                <input type="range" id="charisma" name="charisma" min="1" max="100" value="50" oninput="updateSliderValue(this)">
+                                <div class="slider-value" id="charismaValue">50</div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-top: 15px;">
+                            <button type="button" class="random-btn" onclick="randomizeMentalAttributes()">🎲 随机生成</button>
+                        </div>
+                    </div>
+
+                    <!-- 专业技能 -->
+                    <div class="form-section">
+                        <h3>🎯 专业技能</h3>
+                        <div class="slider-group">
+                            <div class="slider-item">
+                                <label>📈 交易技能</label>
+                                <input type="range" id="tradeSkill" name="tradeSkill" min="1" max="100" value="10" oninput="updateSliderValue(this)">
+                                <div class="slider-value" id="tradeSkillValue">10</div>
+                            </div>
+                            <div class="slider-item">
+                                <label>🗡️ 冒险技能</label>
+                                <input type="range" id="ventureSkill" name="ventureSkill" min="1" max="100" value="10" oninput="updateSliderValue(this)">
+                                <div class="slider-value" id="ventureSkillValue">10</div>
+                            </div>
+                            <div class="slider-item">
+                                <label>🤝 谈判技能</label>
+                                <input type="range" id="negotiationSkill" name="negotiationSkill" min="1" max="100" value="10" oninput="updateSliderValue(this)">
+                                <div class="slider-value" id="negotiationSkillValue">10</div>
+                            </div>
+                            <div class="slider-item">
+                                <label>🔍 分析技能</label>
+                                <input type="range" id="analysisSkill" name="analysisSkill" min="1" max="100" value="10" oninput="updateSliderValue(this)">
+                                <div class="slider-value" id="analysisSkillValue">10</div>
+                            </div>
+                            <div class="slider-item">
+                                <label>👑 领导技能</label>
+                                <input type="range" id="leadershipSkill" name="leadershipSkill" min="1" max="100" value="10" oninput="updateSliderValue(this)">
+                                <div class="slider-value" id="leadershipSkillValue">10</div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-top: 15px;">
+                            <button type="button" class="random-btn" onclick="randomizeSkills()">🎲 随机生成</button>
+                        </div>
+                    </div>
+
+                    <!-- 性格特质 -->
+                    <div class="form-section">
+                        <h3>🌟 性格特质</h3>
+                        <p style="margin-bottom: 15px; color: #666;">选择角色的性格特质（最多选择5个）</p>
+                        <div class="checkbox-group" id="traitsGroup">
+                            <!-- 积极特质 -->
+                            <div class="checkbox-item trait-positive">
+                                <input type="checkbox" id="trait_勤奋" name="traits" value="勤奋">
+                                <label for="trait_勤奋">✨ 勤奋</label>
+                            </div>
+                            <div class="checkbox-item trait-positive">
+                                <input type="checkbox" id="trait_冷静" name="traits" value="冷静">
+                                <label for="trait_冷静">❄️ 冷静</label>
+                            </div>
+                            <div class="checkbox-item trait-positive">
+                                <input type="checkbox" id="trait_幸运" name="traits" value="幸运">
+                                <label for="trait_幸运">🍀 幸运</label>
+                            </div>
+                            <div class="checkbox-item trait-positive">
+                                <input type="checkbox" id="trait_专注" name="traits" value="专注">
+                                <label for="trait_专注">🎯 专注</label>
+                            </div>
+                            <div class="checkbox-item trait-positive">
+                                <input type="checkbox" id="trait_乐观" name="traits" value="乐观">
+                                <label for="trait_乐观">😊 乐观</label>
+                            </div>
+                            <div class="checkbox-item trait-positive">
+                                <input type="checkbox" id="trait_谨慎" name="traits" value="谨慎">
+                                <label for="trait_谨慎">🛡️ 谨慎</label>
+                            </div>
+                            <div class="checkbox-item trait-positive">
+                                <input type="checkbox" id="trait_领袖气质" name="traits" value="领袖气质">
+                                <label for="trait_领袖气质">👑 领袖气质</label>
+                            </div>
+                            <div class="checkbox-item trait-positive">
+                                <input type="checkbox" id="trait_直觉敏锐" name="traits" value="直觉敏锐">
+                                <label for="trait_直觉敏锐">👁️ 直觉敏锐</label>
+                            </div>
+                            <div class="checkbox-item trait-positive">
+                                <input type="checkbox" id="trait_坚韧" name="traits" value="坚韧">
+                                <label for="trait_坚韧">💪 坚韧</label>
+                            </div>
+                            <div class="checkbox-item trait-positive">
+                                <input type="checkbox" id="trait_学习能力强" name="traits" value="学习能力强">
+                                <label for="trait_学习能力强">📚 学习能力强</label>
+                            </div>
+                            
+                            <!-- 消极特质 -->
+                            <div class="checkbox-item trait-negative">
+                                <input type="checkbox" id="trait_冲动" name="traits" value="冲动">
+                                <label for="trait_冲动">⚡ 冲动</label>
+                            </div>
+                            <div class="checkbox-item trait-negative">
+                                <input type="checkbox" id="trait_贪婪" name="traits" value="贪婪">
+                                <label for="trait_贪婪">💰 贪婪</label>
+                            </div>
+                            <div class="checkbox-item trait-negative">
+                                <input type="checkbox" id="trait_懒惰" name="traits" value="懒惰">
+                                <label for="trait_懒惰">😴 懒惰</label>
+                            </div>
+                            <div class="checkbox-item trait-negative">
+                                <input type="checkbox" id="trait_焦虑" name="traits" value="焦虑">
+                                <label for="trait_焦虑">😰 焦虑</label>
+                            </div>
+                            <div class="checkbox-item trait-negative">
+                                <input type="checkbox" id="trait_背叛者" name="traits" value="背叛者">
+                                <label for="trait_背叛者">🗡️ 背叛者</label>
+                            </div>
+                            
+                            <!-- 中性特质 -->
+                            <div class="checkbox-item trait-neutral">
+                                <input type="checkbox" id="trait_完美主义" name="traits" value="完美主义">
+                                <label for="trait_完美主义">⭐ 完美主义</label>
+                            </div>
+                            <div class="checkbox-item trait-neutral">
+                                <input type="checkbox" id="trait_独行侠" name="traits" value="独行侠">
+                                <label for="trait_独行侠">🐺 独行侠</label>
+                            </div>
+                            <div class="checkbox-item trait-neutral">
+                                <input type="checkbox" id="trait_神秘主义" name="traits" value="神秘主义">
+                                <label for="trait_神秘主义">🔮 神秘主义</label>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-top: 15px;">
+                            <button type="button" class="random-btn" onclick="randomizeTraits()">🎲 随机选择</button>
+                            <button type="button" class="random-btn" onclick="clearTraits()">🗑️ 清空选择</button>
+                        </div>
+                        <div id="traitCount" style="text-align: center; margin-top: 10px; color: #666;">
+                            已选择：0/5
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="button success">✨ 创建角色</button>
+                    <button type="button" class="button secondary" onclick="resetForm()">🔄 重置表单</button>
+                    <a href="view_characters.php" class="button">👥 查看角色</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 更新滑块值显示
+        function updateSliderValue(slider) {
+            document.getElementById(slider.id + 'Value').textContent = slider.value;
+        }
+
+        // 根据稀有度更新费用
+        function updateCostsByRarity() {
+            const rarity = document.getElementById('rarity').value;
+            const hireCostInput = document.getElementById('hireCost');
+            const maintenanceCostInput = document.getElementById('maintenanceCost');
+            
+            const costs = {
+                'common': { hire: 3000, maintenance: 150 },
+                'uncommon': { hire: 8000, maintenance: 250 },
+                'rare': { hire: 15000, maintenance: 400 },
+                'epic': { hire: 25000, maintenance: 600 },
+                'legendary': { hire: 50000, maintenance: 1000 }
+            };
+            
+            if (costs[rarity]) {
+                hireCostInput.value = costs[rarity].hire;
+                maintenanceCostInput.value = costs[rarity].maintenance;
+            }
+        }
+
+        // 切换可用状态
+        function toggleAvailability() {
+            const toggle = document.getElementById('availabilityToggle');
+            const input = document.getElementById('isAvailable');
+            
+            if (toggle.classList.contains('active')) {
+                toggle.classList.remove('active');
+                input.value = '0';
+            } else {
+                toggle.classList.add('active');
+                input.value = '1';
+            }
+        }
+
+        // 随机生成基础属性
+        function randomizeAttributes() {
+            const attributes = ['strength', 'vitality', 'agility', 'intelligence', 'faith', 'luck'];
+            attributes.forEach(attr => {
+                const value = Math.floor(Math.random() * 15) + 6; // 6-20
+                document.getElementById(attr).value = value;
+                updateSliderValue(document.getElementById(attr));
+            });
+        }
+
+        // 随机生成精神属性
+        function randomizeMentalAttributes() {
+            const attributes = ['loyalty', 'courage', 'patience', 'greed', 'wisdom', 'charisma'];
+            attributes.forEach(attr => {
+                const value = Math.floor(Math.random() * 80) + 20; // 20-100
+                document.getElementById(attr).value = value;
+                updateSliderValue(document.getElementById(attr));
+            });
+        }
+
+        // 随机生成技能
+        function randomizeSkills() {
+            const skills = ['tradeSkill', 'ventureSkill', 'negotiationSkill', 'analysisSkill', 'leadershipSkill'];
+            skills.forEach(skill => {
+                const value = Math.floor(Math.random() * 70) + 10; // 10-80
+                document.getElementById(skill).value = value;
+                updateSliderValue(document.getElementById(skill));
+            });
+        }
+
+        // 随机选择特质
+        function randomizeTraits() {
+            clearTraits();
+            const checkboxes = document.querySelectorAll('input[name="traits"]');
+            const numTraits = Math.floor(Math.random() * 4) + 2; // 2-5个特质
+            const indices = [];
+            
+            while (indices.length < numTraits) {
+                const randomIndex = Math.floor(Math.random() * checkboxes.length);
+                if (!indices.includes(randomIndex)) {
+                    indices.push(randomIndex);
+                }
+            }
+            
+            indices.forEach(index => {
+                checkboxes[index].checked = true;
+                updateCheckboxStyle(checkboxes[index]);
+            });
+            
+            updateTraitCount();
+        }
+
+        // 清空特质选择
+        function clearTraits() {
+            const checkboxes = document.querySelectorAll('input[name="traits"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+                updateCheckboxStyle(checkbox);
+            });
+            updateTraitCount();
+        }
+
+        // 更新复选框样式
+        function updateCheckboxStyle(checkbox) {
+            const item = checkbox.closest('.checkbox-item');
+            if (checkbox.checked) {
+                item.classList.add('checked');
+            } else {
+                item.classList.remove('checked');
+            }
+        }
+
+        // 更新特质计数
+        function updateTraitCount() {
+            const checkedTraits = document.querySelectorAll('input[name="traits"]:checked');
+            document.getElementById('traitCount').textContent = `已选择：${checkedTraits.length}/5`;
+            
+            // 限制最多5个特质
+            const allTraits = document.querySelectorAll('input[name="traits"]');
+            allTraits.forEach(trait => {
+                if (!trait.checked && checkedTraits.length >= 5) {
+                    trait.disabled = true;
+                    trait.closest('.checkbox-item').style.opacity = '0.5';
+                } else {
+                    trait.disabled = false;
+                    trait.closest('.checkbox-item').style.opacity = '1';
+                }
+            });
+        }
+
+        // 重置表单
+        function resetForm() {
+            if (confirm('确定要重置表单吗？所有输入的数据将丢失。')) {
+                document.getElementById('characterForm').reset();
+                
+                // 重置滑块显示值
+                const sliders = document.querySelectorAll('input[type="range"]');
+                sliders.forEach(slider => {
+                    updateSliderValue(slider);
+                });
+                
+                // 重置特质选择
+                clearTraits();
+                
+                // 重置可用状态
+                document.getElementById('availabilityToggle').classList.add('active');
+                document.getElementById('isAvailable').value = '1';
+            }
+        }
+
+        // 提交表单
+        function submitCharacter(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(document.getElementById('characterForm'));
+            
+            // 收集选中的特质
+            const checkedTraits = Array.from(document.querySelectorAll('input[name="traits"]:checked'))
+                .map(checkbox => checkbox.value);
+            formData.set('traits', JSON.stringify(checkedTraits));
+            
+            // 显示加载状态
+            const submitBtn = document.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = '⏳ 创建中...';
+            submitBtn.disabled = true;
+            
+            fetch('api/add_character.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                showAlert(data.success ? 'success' : 'error', data.message);
+                if (data.success) {
+                    setTimeout(() => {
+                        window.location.href = 'view_characters.php';
+                    }, 2000);
+                }
+            })
+            .catch(error => {
+                showAlert('error', '网络错误，请稍后重试');
+                console.error('Error:', error);
+            })
+            .finally(() => {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            });
+            
+            return false;
+        }
+
+        // 显示提示信息
+        function showAlert(type, message) {
+            const alert = document.getElementById('alert');
+            alert.className = `alert ${type}`;
+            alert.textContent = message;
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 为特质复选框添加事件监听
+            const traitCheckboxes = document.querySelectorAll('input[name="traits"]');
+            traitCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    updateCheckboxStyle(this);
+                    updateTraitCount();
+                });
+            });
+            
+            // 初始化特质计数
+            updateTraitCount();
+        });
+    </script>
+</body>
+</html> 

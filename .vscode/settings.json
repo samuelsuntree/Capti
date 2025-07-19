@@ -1,0 +1,62 @@
+{
+    "files.associations": {
+        "*.sql": "sql"
+    },
+    "editor.formatOnSave": true,
+    "sql.format.keywordCase": "upper",
+    "sql.format.identifierCase": "lower",
+    "sql.format.stripComments": false,
+    "sql.format.reindent": true,
+    "sqltools.connections": [
+        {
+            "name": "GameTrade-Dev",
+            "driver": "MySQL",
+            "server": "localhost",
+            "port": 3306,
+            "database": "game_trade",
+            "username": "game_user",
+            "password": "game_pass_2024",
+            "connectionTimeout": 60000
+        },
+        {
+            "name": "GameTrade-ReadOnly",
+            "driver": "MySQL",
+            "server": "localhost",
+            "port": 3306,
+            "database": "game_trade",
+            "username": "game_readonly",
+            "password": "readonly_pass_2024",
+            "connectionTimeout": 60000
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "Capitalism",
+            "username": "root",
+            "database": "game_trade"
+        }
+    ],
+    "workbench.colorCustomizations": {
+        "editorBracketMatch.background": "#3e4451",
+        "editorBracketMatch.border": "#61dafb"
+    },
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.patterns": {
+        "*.sql": "*.sql.bak"
+    },
+    "search.exclude": {
+        "**/*.log": true,
+        "**/node_modules": true,
+        "**/config/database.json": true
+    },
+    "editor.rulers": [120],
+    "editor.wordWrap": "on",
+    "files.encoding": "utf8",
+    "files.eol": "\n"
+} 
