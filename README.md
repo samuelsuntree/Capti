@@ -1,120 +1,180 @@
-# 🎮 GameTrade MySQL Project
+# Capti - 游戏交易与冒险系统
 
-一个基于MySQL的游戏数据库项目，支持交易和冒险投资两大核心玩法。
+一个基于MySQL的游戏交易和冒险管理系统，包含角色管理、商品交易、团队冒险等功能。
+具体功能详见PROJECT_SUMMARY.md
 
-## 🎯 游戏概念
+## 系统要求
 
-### A模块：Trade（主玩法1）
-- **核心玩法**：虚拟币交易系统
-- **操作**：买入/卖出，自动止盈止损
-- **循环**：情报获取 → 市场判断 → 买入卖出 → 等待波动 → 收益结算
+- MySQL 8.0 或更高版本
+- PHP 7.4 或更高版本（用于Web界面）
+- Web服务器（Apache/Nginx）或PHP内置服务器
 
-### B模块：Venture（主玩法2）
-- **核心玩法**：投资冒险队伍远征
-- **操作**：观察项目 → 风险评估 → 投资决策 → 等待结果 → 收益结算
-- **特色**：高风险高收益，后期可影响冒险队伍决策
-
-### 模块联动机制
-- 冒险成功 → 资源供应增加 → 价格下跌
-- 商品价格暴涨 → 吸引更多相关冒险队伍
-- 稀有战利品超预期 → 投资热度提升
-- 资源过度开采 → 生态破坏 → 市场转向
-
-## 📁 项目结构
+## 目录结构
 
 ```
-GameTrade_MySQL_Project/
-├── .vscode/              # VS Code 配置
-├── database/
-│   ├── schema/           # 数据库表结构
-│   ├── data/             # 初始数据和测试数据
-│   ├── migrations/       # 数据库迁移脚本
-│   ├── queries/          # 常用查询脚本
-│   └── procedures/       # 存储过程和函数
-├── scripts/              # 工具脚本
-├── docs/                 # 文档
-├── config/               # 配置文件
-└── README.md
+Capti/
+├── backups/                     # 数据库备份文件
+│   └── game_trade_backup_*.sql  # 时间戳命名的备份文件
+├── config/                      # 配置文件目录
+├── database/                    # 数据库核心文件
+│   ├── examples/                # 示例和测试
+│   ├── queries/                 # SQL查询模板
+│   │   ├── trade_queries.sql    # 交易相关查询
+│   │   └── venture_queries.sql  # 冒险相关查询
+│   └── schema/                  # 核心表结构
+│       ├── 01_players.sql       # 玩家/角色系统
+│       ├── 02_trade_module.sql  # 交易系统
+│       ├── 03_venture_module.sql # 冒险系统
+│       └── 04_interaction_system.sql # 交互系统
+├── scripts/                     # 管理脚本
+│   ├── backup_database.sql      # 数据库备份脚本
+│   ├── create_user.sql          # 用户创建脚本
+│   ├── reset_database.sql       # 数据库重置脚本
+│   └── README.md                # 脚本使用说明
+├── web_interface/               # Web界面
+│   ├── api/                     # API接口
+│   ├── config/                  # Web配置
+│   ├── add_character.html       # 添加角色页面
+│   ├── index.html               # 主页
+│   ├── README.md                # Web界面说明
+│   ├── update_config.php        # 配置更新
+│   └── view_characters.php      # 角色列表页面
+├── add_CSV_data/                # CSV数据导入相关
+├── init_database.sql            # 数据库初始化脚本
+├── PROJECT_SUMMARY.md           # 项目功能详细说明
+└── README.md                    # 项目说明文档
 ```
 
-## 🗄️ 数据库设计
+## 安装步骤
 
-### 核心表结构
+### 1. 安装必要软件
 
-#### 玩家系统
-- `players` - 玩家基本信息
-- `player_assets` - 玩家资产
-- `player_levels` - 玩家等级和解锁功能
+#### MySQL安装
+1. 下载并安装 MySQL 8.0
+   - Windows: 从 [MySQL官网](https://dev.mysql.com/downloads/mysql/) 下载安装包
+   - 安装时记住root密码
+   - 确保MySQL服务已启动
 
-#### Trade模块
-- `commodities` - 商品/资源信息
-- `price_history` - 价格历史记录
-- `trade_orders` - 交易订单
-- `auto_trading_rules` - 自动交易规则
+#### PHP安装
+1. 下载并安装 PHP 7.4+
+   - Windows: 可以使用 [XAMPP](https://www.apachefriends.org/) 或独立PHP
+   - 确保安装了以下PHP扩展：
+     - mysqli
+     - json
+     - pdo_mysql
 
-#### Venture模块
-- `adventure_teams` - 冒险队伍
-- `adventure_projects` - 冒险项目
-- `investments` - 投资记录
-- `adventure_results` - 冒险结果
+### 2. 数据库初始化
 
-#### 联动系统
-- `market_events` - 市场事件
-- `adventure_market_impacts` - 冒险对市场的影响
+1. 打开命令行，进入项目目录：
+```bash
+cd path/to/Capti
+```
 
-## 🚀 使用方法
+2. 登录MySQL（替换 your_password 为你的root密码）：
+```bash
+mysql -u root -p
+```
 
-1. **环境配置**
-   ```bash
-   # 安装MySQL
-   # 配置数据库连接
+3. 执行初始化脚本：
+```sql
+source init_database.sql
+```
+
+这将：
+- 创建数据库和用户
+- 导入表结构
+- 添加示例数据
+
+### 3. Web界面设置
+
+1. 配置数据库连接
+   - 复制 `web_interface/config/database.php.example` 为 `database.php`
+   - 编辑 `database.php`，设置正确的数据库连接信息：
+   ```php
+   $db_config = [
+       'host' => 'localhost',
+       'user' => 'game_user',
+       'password' => 'capti_game',
+       'database' => 'game_trade'
+   ];
    ```
 
-2. **数据库初始化**
+2. 启动Web服务器
+   - 使用PHP内置服务器（开发环境）：
    ```bash
-   mysql -u root -p < scripts/init_database.sql
+   cd web_interface
+   php -S localhost:8000
    ```
+   - 或配置Apache/Nginx（生产环境）
 
-3. **运行迁移**
-   ```bash
-   mysql -u root -p game_trade < database/migrations/001_initial_schema.sql
-   ```
+3. 访问Web界面
+   - 打开浏览器访问：`http://localhost:8000`
 
-4. **插入测试数据**
-   ```bash
-   mysql -u root -p game_trade < database/data/sample_data.sql
-   ```
+## 数据库备份
 
-## 🔧 开发工具
+1. 创建备份：
+```sql
+source scripts/backup_database.sql
+```
+备份文件将保存在 `backups/` 目录，文件名包含时间戳。
 
-- **MySQL Workbench** - 数据库设计和管理
-- **VS Code** - 代码编辑（安装MySQL扩展）
-- **phpMyAdmin** - Web界面管理（可选）
+2. 恢复备份：
+```sql
+mysql -u root -p game_trade < backups/[备份文件名].sql
+```
 
-## 📈 功能特色
+## 主要功能
 
-### 实时交易系统
-- 动态价格波动
-- 自动止盈止损
-- 历史数据分析
-- 市场趋势预测
+- 角色管理
+  - 添加/编辑角色
+  - 查看角色状态
+  - 管理角色属性和技能
 
-### 冒险投资系统
-- 多样化冒险项目
-- 风险收益评估
-- 投资组合管理
-- 实时结果追踪
+- 交易系统
+  - 商品管理
+  - 交易订单
+  - 市场分析
 
-### 智能联动机制
-- 市场-冒险双向影响
-- 经济生态模拟
-- 事件驱动的价格变动
-- 玩家行为影响市场
+- 冒险系统
+  - 团队组建
+  - 冒险项目管理
+  - 投资管理
 
-## 🎪 游戏平衡
+## 用户和权限
 
-通过精心设计的算法确保：
-- 市场波动的真实感
-- 冒险项目的多样性
-- 风险与收益的平衡
-- 长期游戏的可持续性 
+- `game_user`: 完整权限（密码：capti_game）
+- `game_readonly`: 只读权限（密码：capti_readonly）
+
+## 开发说明
+
+- 数据库使用 UTF8MB4 编码
+- 所有金额使用 DECIMAL 类型
+- 使用软删除设计（待实现）
+- 支持多语言（待实现）
+
+## 注意事项
+
+1. 首次使用请修改默认密码
+2. 定期备份数据库
+3. 生产环境部署时注意安全配置
+
+## 常见问题
+
+1. MySQL连接错误
+   - 检查MySQL服务是否运行
+   - 验证用户名和密码
+   - 确认数据库权限
+
+2. Web界面无法访问
+   - 检查PHP服务是否运行
+   - 确认端口是否被占用
+   - 查看PHP错误日志
+   - *我用的xampp，很省心，可以尝试安装
+
+## 许可证
+
+[许可证类型]
+
+## 联系方式
+
+[联系信息] 

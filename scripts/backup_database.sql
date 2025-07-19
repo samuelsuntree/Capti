@@ -1,6 +1,7 @@
 -- =============================================
 -- Simple Database Backup Script
 -- =============================================
+-- mysqldump -u root -p --single-transaction --routines --triggers game_trade > game_trade_backup_$(Get-Date -Format "yyyyMMdd_HHmmss").sql
 
 -- Show backup command with current timestamp
 SELECT CONCAT(
