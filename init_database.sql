@@ -65,19 +65,21 @@ ALTER TABLE commodities ADD INDEX idx_commodity_status (commodity_status, delete
 -- 例如：WHERE is_active = TRUE 或 WHERE deleted_at IS NULL
 */
 
--- 先加载不依赖其他表的基础表
+-- 按照依赖关系顺序加载各模块
+-- 1. 先加载玩家系统（基础表）
 source E:/resource/github/Capti/database/schema/01_players.sql
 
--- 加载交易模块（依赖players表）
-source E:/resource/github/Capti/database/schema/02_trade_module.sql
+-- 2. 加载物品系统（依赖players表）
+source E:/resource/github/Capti/database/schema/02_item_module.sql
 
--- 加载冒险模块（依赖players和trade_module）
-source E:/resource/github/Capti/database/schema/03_venture_module.sql
+-- 3. 加载交易模块（依赖players和item_module）
+source E:/resource/github/Capti/database/schema/03_trade_module.sql
 
+-- 4. 加载冒险模块（依赖前面所有模块）
+source E:/resource/github/Capti/database/schema/04_venture_module.sql
 
-
--- 加载交互系统（依赖其他所有模块）
-source E:/resource/github/Capti/database/schema/04_interaction_system.sql
+-- 5. 加载交互系统（依赖所有其他模块）
+source E:/resource/github/Capti/database/schema/05_interaction_system.sql
 
 -- =============================================
 -- 3. 初始化游戏数据
@@ -108,62 +110,134 @@ INSERT INTO personality_traits (trait_name, trait_category, description, trade_m
 ('神秘主义', 'neutral', '对超自然事物敏感', -0.05, 0.25, 0.00, 0.10, 'uncommon');
 
 -- =============================================
--- 3.2 插入商品数据 - 稀有和传说级别商品
+-- 3.2 插入大宗货品数据
 -- =============================================
 
-INSERT INTO commodities (
-    commodity_name, commodity_symbol, category, rarity, base_price, current_price,
-    market_cap, total_supply, circulating_supply, volatility_index, price_change_24h,
-    volume_24h, description, is_tradeable, is_active
+-- 基础货币
+INSERT INTO bulk_commodities (
+    commodity_name, commodity_code, category, rarity, base_value,
+    stack_limit, weight_per_unit, description, obtainable_from,
+    is_main_currency, exchange_rate, can_exchange
 ) VALUES
-('龙鳞金', 'DRAGON', 'rare', 'legendary', 10000.00, 15000.00,
- 1000000.00, 1000.00, 100.00, 0.15, 0.00,
- 1000.00, '传说中的龙鳞锻造而成的珍贵金属', TRUE, TRUE),
+('金币', 'GOLD', 'currency', 'common', 1.00,
+ 999999999, 0.01, '通用货币', JSON_ARRAY('quest', 'trade', 'adventure'),
+ TRUE, 1.00, TRUE),
+ 
+('银币', 'SILVER', 'currency', 'common', 0.01,
+ 999999999, 0.01, '零钱货币', JSON_ARRAY('quest', 'trade', 'adventure'),
+ FALSE, 0.01, TRUE);
 
-('月光银', 'MOON', 'magic', 'epic', 5000.00, 8000.00,
- 500000.00, 2000.00, 500.00, 0.12, 0.00,
- 2000.00, '在月圆之夜采集的神秘银矿', TRUE, TRUE),
-
-('血玉', 'BLOODJADE', 'gem', 'rare', 3000.00, 4500.00,
- 300000.00, 3000.00, 1000.00, 0.18, 0.00,
- 1500.00, '蕴含生命力的稀有宝石', TRUE, TRUE),
-
-('星辰石', 'STARSTONE', 'magic', 'epic', 8000.00, 12000.00,
- 800000.00, 1500.00, 300.00, 0.20, 0.00,
- 1200.00, '从天外陨石中提取的能量结晶', TRUE, TRUE),
-
-('幽冥水晶', 'NETHER', 'magic', 'rare', 2000.00, 3500.00,
- 200000.00, 4000.00, 2000.00, 0.25, 0.00,
- 2500.00, '来自地底深处的黑暗水晶', TRUE, TRUE);
-
--- =============================================
--- 3.3 插入商品数据 - 基础商品
--- =============================================
-
-INSERT INTO commodities (
-    commodity_name, commodity_symbol, category, rarity, base_price, current_price,
-    market_cap, total_supply, circulating_supply, volatility_index, description,
-    is_tradeable, is_active
+-- 基础材料
+INSERT INTO bulk_commodities (
+    commodity_name, commodity_code, category, rarity, base_value,
+    stack_limit, weight_per_unit, description, obtainable_from
 ) VALUES
-('铁矿石', 'IRON', 'metal', 'common', 100.00, 100.00,
- 1000000.00, 100000.00, 50000.00, 0.05, '基础金属矿石',
- TRUE, TRUE),
+('铁矿石', 'IRON_ORE', 'ore', 'common', 100.00,
+ 9999, 2.00, '基础金属矿石', JSON_ARRAY('mining', 'trade')),
 
-('铜矿石', 'COPPER', 'metal', 'common', 150.00, 150.00,
- 1500000.00, 80000.00, 40000.00, 0.06, '导电金属矿石',
- TRUE, TRUE),
+('铜矿石', 'COPPER_ORE', 'ore', 'common', 150.00,
+ 9999, 2.00, '导电金属矿石', JSON_ARRAY('mining', 'trade')),
 
-('黄金', 'GOLD', 'metal', 'rare', 1000.00, 1000.00,
- 10000000.00, 10000.00, 5000.00, 0.10, '贵重金属',
- TRUE, TRUE),
+('黄金矿石', 'GOLD_ORE', 'ore', 'rare', 1000.00,
+ 999, 2.00, '贵重金属矿石', JSON_ARRAY('mining', 'trade')),
 
-('白银', 'SILVER', 'metal', 'uncommon', 500.00, 500.00,
- 5000000.00, 20000.00, 10000.00, 0.08, '贵重金属',
- TRUE, TRUE),
+('白银矿石', 'SILVER_ORE', 'ore', 'uncommon', 500.00,
+ 999, 2.00, '贵重金属矿石', JSON_ARRAY('mining', 'trade')),
 
-('钻石', 'DIAMOND', 'gem', 'rare', 5000.00, 5000.00,
- 50000000.00, 5000.00, 2000.00, 0.15, '稀有宝石',
- TRUE, TRUE);
+('钻石原石', 'RAW_DIAMOND', 'gem', 'rare', 5000.00,
+ 99, 0.10, '未经打磨的钻石', JSON_ARRAY('mining', 'adventure'));
+
+-- 稀有材料
+INSERT INTO bulk_commodities (
+    commodity_name, commodity_code, category, rarity, base_value,
+    stack_limit, weight_per_unit, description, obtainable_from
+) VALUES
+('龙鳞', 'DRAGON_SCALE', 'material', 'epic', 10000.00,
+ 99, 0.50, '从巨龙身上掉落的鳞片', JSON_ARRAY('adventure', 'boss_drop')),
+
+('月光精华', 'MOONLIGHT', 'material', 'rare', 5000.00,
+ 99, 0.05, '月圆之夜采集的神秘物质', JSON_ARRAY('adventure', 'time_event')),
+
+('血玉原石', 'BLOOD_JADE', 'gem', 'rare', 3000.00,
+ 99, 0.20, '蕴含生命能量的宝石', JSON_ARRAY('mining', 'adventure')),
+
+('星辰碎片', 'STAR_SHARD', 'material', 'epic', 8000.00,
+ 99, 0.10, '陨石中发现的神秘碎片', JSON_ARRAY('adventure', 'special_event')),
+
+('幽冥结晶', 'VOID_CRYSTAL', 'material', 'rare', 2000.00,
+ 99, 0.15, '深渊中生长的暗色晶体', JSON_ARRAY('mining', 'adventure'));
+
+-- =============================================
+-- 3.3 插入装备类型数据
+-- =============================================
+INSERT INTO equipment_types (
+    type_name, type_category, equip_slot, can_dual_wield, description
+) VALUES
+('单手剑', 'weapon', 'main_hand', TRUE, '标准单手剑'),
+('双手剑', 'weapon', 'both_hands', FALSE, '需要双手持握的大剑'),
+('法杖', 'weapon', 'main_hand', FALSE, '魔法导器'),
+('盾牌', 'weapon', 'off_hand', FALSE, '防御装备'),
+('轻甲', 'armor', 'body', FALSE, '轻便的护甲'),
+('重甲', 'armor', 'body', FALSE, '沉重但防御力强的护甲'),
+('法袍', 'armor', 'body', FALSE, '适合法师的长袍'),
+('戒指', 'accessory', 'ring', FALSE, '增益饰品'),
+('项链', 'accessory', 'neck', FALSE, '增益饰品'),
+('背包', 'accessory', 'back', FALSE, '增加携带容量'),
+('采矿镐', 'tool', 'main_hand', FALSE, '用于采矿的工具');
+
+-- =============================================
+-- 3.4 插入装备模板
+-- =============================================
+
+INSERT INTO equipment_templates (
+    equipment_name, type_id, rarity, base_durability, base_value,
+    level_requirement, base_attributes, possible_affixes, is_craftable,
+    is_legendary, max_instances, lore, special_abilities, discovery_condition
+) VALUES
+-- 普通装备模板
+('铁剑', 1, 'common', 100, 500, 1,
+ JSON_OBJECT('damage', 10, 'speed', 1.2),
+ JSON_ARRAY('锋利', '耐久', '迅捷'),
+ TRUE, FALSE, NULL, NULL, NULL, NULL),
+
+('精钢大剑', 2, 'uncommon', 150, 1200, 5,
+ JSON_OBJECT('damage', 25, 'speed', 0.8),
+ JSON_ARRAY('锋利', '重击', '坚固'),
+ TRUE, FALSE, NULL, NULL, NULL, NULL),
+
+('智慧法杖', 3, 'rare', 80, 2000, 10,
+ JSON_OBJECT('magic_damage', 30, 'intelligence', 5),
+ JSON_ARRAY('魔力', '智慧', '法术强化'),
+ TRUE, FALSE, NULL, NULL, NULL, NULL),
+
+('轻型皮甲', 5, 'common', 120, 800, 1,
+ JSON_OBJECT('defense', 15, 'movement_speed', 0.1),
+ JSON_ARRAY('坚固', '轻便', '敏捷'),
+ TRUE, FALSE, NULL, NULL, NULL, NULL),
+
+('探险者背包', (SELECT type_id FROM equipment_types WHERE type_name = '背包'), 'uncommon', 200, 1500, 5,
+ JSON_OBJECT('inventory_slots', 8, 'movement_speed', -0.05),
+ JSON_ARRAY('容量', '耐久', '轻便'),
+ TRUE, FALSE, NULL, NULL, NULL, NULL),
+
+-- 传说装备模板
+('龙血圣剑', 2, 'legendary', 200, 50000, 30,
+ JSON_OBJECT('damage', 100, 'strength', 20, 'fire_damage', 50),
+ NULL, -- 传说装备没有随机词缀
+ FALSE, -- 不可制作
+ TRUE, -- 是传说装备
+ 1, -- 全服唯一
+ '传说中由巨龙之血淬炼而成的神剑，蕴含着远古巨龙的力量。在上古之战中，一位无名英雄用它斩杀了毁灭之龙，但随后神剑就消失在历史长河中。',
+ JSON_OBJECT(
+    'dragon_slayer', '对龙类生物造成300%伤害',
+    'flame_burst', '有机率释放龙息攻击',
+    'blood_resonance', '击杀敌人时有机率回复生命值'
+ ),
+ JSON_OBJECT(
+    'condition', '在龙穴中击败守护者',
+    'required_level', 30,
+    'required_reputation', 1000
+ ));
 
 -- =============================================
 -- 3.4 插入示例雇佣角色数据 - 初始可雇佣角色
@@ -232,16 +306,108 @@ INSERT INTO player_mood (player_id, happiness, stress, motivation, confidence, f
 -- 3.6 为角色提供初始资产
 -- =============================================
 
-INSERT INTO player_assets (player_id, asset_type, asset_name, quantity, equipment_quality) VALUES
-(1, 'equipment', '龙鳞盔甲', 1, 'masterwork'),
-(1, 'equipment', '烈焰之剑', 1, 'excellent'),
-(1, 'gold', '金币', 5000, 'common'),
-(2, 'equipment', '智慧法杖', 1, 'excellent'),
-(2, 'equipment', '商人长袍', 1, 'good'),
-(2, 'gold', '金币', 8000, 'common'),
-(3, 'gold', '金币', 1000, 'common'),
-(4, 'gold', '金币', 500, 'common'),
-(5, 'gold', '金币', 300, 'common');
+-- 插入大宗货品持有记录（金币）
+INSERT INTO bulk_commodity_holdings (player_id, commodity_id, quantity) 
+SELECT 1, (SELECT commodity_id FROM bulk_commodities WHERE commodity_code = 'GOLD'), 5000
+UNION ALL
+SELECT 2, (SELECT commodity_id FROM bulk_commodities WHERE commodity_code = 'GOLD'), 8000
+UNION ALL
+SELECT 3, (SELECT commodity_id FROM bulk_commodities WHERE commodity_code = 'GOLD'), 1000
+UNION ALL
+SELECT 4, (SELECT commodity_id FROM bulk_commodities WHERE commodity_code = 'GOLD'), 500
+UNION ALL
+SELECT 5, (SELECT commodity_id FROM bulk_commodities WHERE commodity_code = 'GOLD'), 300;
+
+-- 创建并分配装备实例
+INSERT INTO equipment_instances (
+    template_id, current_owner_id, durability, current_value,
+    attributes, creation_type, creation_source,
+    power_level, awakening_level, seal_level
+) VALUES
+-- 龙血战士·阿克斯的传说装备
+(
+    (SELECT template_id FROM equipment_templates WHERE equipment_name = '龙血圣剑'),
+    1, -- 阿克斯
+    200, -- 满耐久度
+    50000,
+    JSON_OBJECT(
+        'damage', 100,
+        'strength', 20,
+        'fire_damage', 50,
+        'critical_chance', 15,
+        'dragon_slayer_bonus', 300
+    ),
+    'discovery',
+    'ancient_dragon_lair',
+    5.0, -- 当前力量等级
+    2,   -- 觉醒等级
+    0    -- 未被封印
+),
+
+-- 智慧商人·莉雅的装备
+(
+    (SELECT template_id FROM equipment_templates WHERE equipment_name = '智慧法杖'),
+    2, -- 莉雅
+    80,
+    2000,
+    JSON_OBJECT(
+        'magic_damage', 35,
+        'intelligence', 7,
+        'mana_regen', 10,
+        'spell_critical', 5
+    ),
+    'craft',
+    'master_craftsman',
+    NULL, NULL, NULL -- 非传说装备
+),
+
+-- 新手商人·汤姆的装备
+(
+    (SELECT template_id FROM equipment_templates WHERE equipment_name = '轻型皮甲'),
+    3, -- 汤姆
+    120,
+    800,
+    JSON_OBJECT(
+        'defense', 15,
+        'movement_speed', 0.1,
+        'dodge_chance', 3
+    ),
+    'system',
+    'initial_equipment',
+    NULL, NULL, NULL
+),
+
+-- 勇敢少女·安娜的装备
+(
+    (SELECT template_id FROM equipment_templates WHERE equipment_name = '探险者背包'),
+    4, -- 安娜
+    200,
+    1500,
+    JSON_OBJECT(
+        'inventory_slots', 8,
+        'movement_speed', -0.05,
+        'item_find_luck', 5
+    ),
+    'quest_reward',
+    'explorer_guild_quest',
+    NULL, NULL, NULL
+),
+
+-- 背叛者·维克的装备
+(
+    (SELECT template_id FROM equipment_templates WHERE equipment_name = '铁剑'),
+    5, -- 维克
+    100,
+    500,
+    JSON_OBJECT(
+        'damage', 12,
+        'speed', 1.3,
+        'backstab_bonus', 5
+    ),
+    'loot',
+    'bandit_camp',
+    NULL, NULL, NULL
+);
 
 -- =============================================
 -- 3.7 插入冒险队伍数据 - 预设队伍

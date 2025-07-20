@@ -187,7 +187,7 @@ CREATE TABLE investment_returns (
     net_return DECIMAL(20,2) NOT NULL,
     FOREIGN KEY (investment_id) REFERENCES investments(investment_id) ON DELETE CASCADE,
     FOREIGN KEY (result_id) REFERENCES adventure_results(result_id) ON DELETE CASCADE,
-    FOREIGN KEY (commodity_id) REFERENCES commodities(commodity_id) ON DELETE SET NULL,
+    FOREIGN KEY (commodity_id) REFERENCES bulk_commodities(commodity_id) ON DELETE SET NULL,
     INDEX idx_investment_id (investment_id),
     INDEX idx_result_id (result_id),
     INDEX idx_return_type (return_type),

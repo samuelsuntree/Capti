@@ -154,6 +154,7 @@
                 <li><a href="index.html" class="active">主页</a></li>
                 <li><a href="add_character.html">添加角色</a></li>
                 <li><a href="view_characters.php">查看角色</a></li>
+                <li><a href="view_items.php">物品系统</a></li>
             </ul>
         </nav>
         
@@ -169,17 +170,18 @@
                     <span class="stat-label">传奇角色</span>
                 </div>
                 <div class="stat-card">
-                    <span class="stat-number" id="averageLevel">-</span>
-                    <span class="stat-label">平均等级</span>
+                    <span class="stat-number" id="totalItems">-</span>
+                    <span class="stat-label">物品总数</span>
                 </div>
                 <div class="stat-card">
                     <span class="stat-number" id="totalValue">-</span>
-                    <span class="stat-label">总价值</span>
+                    <span class="stat-label">总资产</span>
                 </div>
             </div>
             
+            <!-- 角色系统 -->
             <div class="card">
-                <h2>欢迎使用角色管理系统</h2>
+                <h2>角色系统</h2>
                 <p>这是一个简单易用的Web界面，用于管理您的游戏角色数据。无需SQL知识，即可轻松操作数据库。</p>
                 
                 <div class="features">
@@ -205,6 +207,35 @@
                     </div>
                 </div>
             </div>
+
+            <!-- 物品系统 -->
+            <div class="card">
+                <h2>物品系统</h2>
+                <p>完整的物品管理系统，支持多种物品类型和复杂的物品属性。</p>
+                
+                <div class="features">
+                    <div class="feature-card">
+                        <div class="feature-icon">💰</div>
+                        <h3>大宗货品</h3>
+                        <p>包括货币、矿石、宝石、材料等可堆叠物品<br>支持不同稀有度和类别</p>
+                        <a href="view_items.php?type=bulk" class="button view">查看大宗货品</a>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">⚔️</div>
+                        <h3>装备系统</h3>
+                        <p>武器、防具、饰品和工具<br>支持装备强化和属性系统</p>
+                        <a href="view_items.php?type=equipment" class="button view">查看装备</a>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🌟</div>
+                        <h3>传说装备</h3>
+                        <p>独特的传说装备系统<br>包含觉醒和封印机制</p>
+                        <a href="view_items.php?type=legendary" class="button view">查看传说装备</a>
+                    </div>
+                </div>
+            </div>
             
             <div class="card">
                 <h2>系统功能</h2>
@@ -217,6 +248,10 @@
                     <li>✅ 删除角色</li>
                     <li>✅ 实时统计信息</li>
                     <li>✅ 响应式设计</li>
+                    <li>✅ 物品强化系统</li>
+                    <li>✅ 装备历史追踪</li>
+                    <li>✅ 物品交易记录</li>
+                    <li>✅ 容器管理系统</li>
                 </ul>
             </div>
         </div>
@@ -230,7 +265,7 @@
                 .then(data => {
                     document.getElementById('totalCharacters').textContent = data.total || '0';
                     document.getElementById('legendaryCount').textContent = data.legendary || '0';
-                    document.getElementById('averageLevel').textContent = data.avgLevel || '0';
+                    document.getElementById('totalItems').textContent = data.items || '0';
                     document.getElementById('totalValue').textContent = data.totalValue || '0';
                 })
                 .catch(error => {
