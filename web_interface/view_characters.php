@@ -1,5 +1,5 @@
 <?php
-require_once 'config/database.php';
+require_once 'config/database_sqlite.php';
 
 try {
     $pdo = getDBConnection();
@@ -44,9 +44,12 @@ try {
             LEFT JOIN team_members tm ON p.player_id = tm.player_id
             LEFT JOIN adventure_teams t ON tm.team_id = t.team_id
             LEFT JOIN (
-                SELECT player_id, COUNT(*) as asset_count 
-                FROM player_assets 
-                GROUP BY player_id
+                SELECT 
+                    current_owner_id as player_id,
+                    COUNT(*) as asset_count 
+                FROM equipment_instances 
+                WHERE owner_type = 'player'
+                GROUP BY current_owner_id
             ) asset_counts ON p.player_id = asset_counts.player_id
             LEFT JOIN (
                 SELECT 

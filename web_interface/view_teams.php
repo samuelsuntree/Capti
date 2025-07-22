@@ -1,5 +1,5 @@
 <?php
-require_once 'config/database.php';
+require_once 'config/database_sqlite.php';
 
 try {
     $pdo = getDBConnection();
@@ -11,11 +11,10 @@ try {
                 GROUP_CONCAT(
                     DISTINCT
                     CASE 
-                        WHEN tm.role = 'leader' THEN CONCAT(p.character_name, ' (队长)')
+                        WHEN tm.role = 'leader' THEN p.character_name || ' (队长)'
                         ELSE p.character_name
                     END
                     ORDER BY tm.role DESC, p.character_name
-                    SEPARATOR ', '
                 ) as member_list,
                 COALESCE(SUM(CASE WHEN tm.role = 'leader' THEN p.leadership_skill ELSE 0 END), 0) as leader_skill,
                 AVG(DISTINCT p.current_level) as avg_level,
@@ -27,8 +26,8 @@ try {
             LEFT JOIN players p ON tm.player_id = p.player_id
             LEFT JOIN equipment_instances e ON p.player_id = e.current_owner_id AND e.is_broken = FALSE
             GROUP BY t.team_id, t.team_name, t.team_leader, t.team_size, t.specialization, 
-                     t.team_level, t.experience_points, t.success_rate, t.current_status, 
-                     t.base_cost, t.reputation_score, t.team_description
+                     t.team_level, t.success_rate, t.current_status, 
+                     t.base_cost, t.team_description
             ORDER BY t.success_rate DESC";
             
     $stmt = $pdo->query($sql);
@@ -40,7 +39,6 @@ try {
                 COUNT(DISTINCT tm.player_id) as total_members,
                 COUNT(DISTINCT CASE WHEN tm.role = 'leader' THEN tm.player_id END) as total_leaders,
                 AVG(t.success_rate) as avg_success_rate,
-                SUM(t.experience_points) as total_experience,
                 COUNT(DISTINCT CASE WHEN t.current_status = 'available' THEN t.team_id END) as available_teams
             FROM adventure_teams t
             LEFT JOIN team_members tm ON t.team_id = tm.team_id";

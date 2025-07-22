@@ -33,14 +33,14 @@ if not exist "..\scripts\import_csv_data.php" (
     echo [OK] Import script exists
 )
 
-if not exist "..\web_interface\config\database.php" (
-    echo [ERROR] Database config file not found
-    echo Please ensure web_interface\config\database.php file exists
+if not exist "..\web_interface\config\database_sqlite.php" (
+    echo [ERROR] SQLite database config file not found
+    echo Please ensure web_interface\config\database_sqlite.php file exists
     echo.
     pause
     exit /b 1
 ) else (
-    echo [OK] Database config file exists
+    echo [OK] SQLite database config file exists
 )
 
 echo.

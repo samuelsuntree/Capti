@@ -1,5 +1,5 @@
 <?php
-require_once 'config/database.php';
+require_once 'config/database_sqlite.php';
 
 // 获取特定玩家ID，如果没有则显示所有玩家列表
 $trader_id = isset($_GET['id']) ? intval($_GET['id']) : null;

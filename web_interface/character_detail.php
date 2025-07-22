@@ -1,5 +1,5 @@
 <?php
-require_once 'config/database.php';
+require_once 'config/database_sqlite.php';
 
 try {
     $pdo = getDBConnection();
@@ -45,21 +45,23 @@ try {
     $stmt->execute(['player_id' => $character['player_id']]);
     $equipments = $stmt->fetchAll();
     
-    // 获取角色特质
-    $sql = "SELECT 
-                t.trait_name, t.trait_category, t.description,
-                t.trade_modifier, t.venture_modifier, t.loyalty_modifier, t.stress_modifier
-            FROM personality_traits t
-            WHERE t.trait_name IN (
-                SELECT JSON_UNQUOTE(traits.trait)
-                FROM players p,
-                JSON_TABLE(p.personality_traits, '$[*]' COLUMNS (trait VARCHAR(50) PATH '$')) traits
-                WHERE p.character_code = :character_code
-            )";
-            
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute(['character_code' => $character_code]);
-    $traits = $stmt->fetchAll();
+    // 获取角色特质 - 使用PHP处理JSON而不是SQLite的JSON_TABLE
+    $personality_traits = parseJson($character['personality_traits']);
+    
+    if (!empty($personality_traits)) {
+        $placeholders = str_repeat('?,', count($personality_traits) - 1) . '?';
+        $sql = "SELECT 
+                    t.trait_name, t.trait_category, t.description,
+                    t.trade_modifier, t.venture_modifier, t.loyalty_modifier, t.stress_modifier
+                FROM personality_traits t
+                WHERE t.trait_name IN ($placeholders)";
+                
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($personality_traits);
+        $traits = $stmt->fetchAll();
+    } else {
+        $traits = [];
+    }
     
 } catch (Exception $e) {
     $error = $e->getMessage();

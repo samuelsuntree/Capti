@@ -1,13 +1,13 @@
 # Capti - 游戏交易与冒险系统
 
-一个基于MySQL的游戏交易和冒险管理系统，包含角色管理、商品交易、团队冒险等功能。
-具体功能详见PROJECT_SUMMARY.md
+一个基于 MySQL 的游戏交易和冒险管理系统，包含角色管理、商品交易、团队冒险等功能。
+具体功能详见 PROJECT_SUMMARY.md
 
 ## 系统要求
 
 - MySQL 8.0 或更高版本
-- PHP 7.4 或更高版本（用于Web界面）
-- Web服务器（Apache/Nginx）或PHP内置服务器
+- PHP 7.4 或更高版本（用于 Web 界面）
+- Web 服务器（Apache/Nginx）或 PHP 内置服务器
 
 ## 目录结构
 
@@ -49,16 +49,18 @@ Capti/
 
 ### 1. 安装必要软件
 
-#### MySQL安装
-1. 下载并安装 MySQL 8.0
-   - Windows: 从 [MySQL官网](https://dev.mysql.com/downloads/mysql/) 下载安装包
-   - 安装时记住root密码
-   - 确保MySQL服务已启动
+#### MySQL 安装
 
-#### PHP安装
+1. 下载并安装 MySQL 8.0
+   - Windows: 从 [MySQL 官网](https://dev.mysql.com/downloads/mysql/) 下载安装包
+   - 安装时记住 root 密码
+   - 确保 MySQL 服务已启动
+
+#### PHP 安装
+
 1. 下载并安装 PHP 7.4+
-   - Windows: 可以使用 [XAMPP](https://www.apachefriends.org/) 或独立PHP
-   - 确保安装了以下PHP扩展：
+   - Windows: 可以使用 [XAMPP](https://www.apachefriends.org/) 或独立 PHP
+   - 确保安装了以下 PHP 扩展：
      - mysqli
      - json
      - pdo_mysql
@@ -66,30 +68,36 @@ Capti/
 ### 2. 数据库初始化
 
 1. 打开命令行，进入项目目录：
+
 ```bash
 cd path/to/Capti
 ```
 
-2. 登录MySQL（替换 your_password 为你的root密码）：
+2. 登录 MySQL（替换 your_password 为你的 root 密码）：
+
 ```bash
 mysql -u root -p
 ```
 
 3. 执行初始化脚本：
+
 ```sql
 source init_database.sql
 ```
 
 这将：
+
 - 创建数据库和用户
 - 导入表结构
 - 添加示例数据
 
-### 3. Web界面设置
+### 3. Web 界面设置
 
 1. 配置数据库连接
+
    - 复制 `web_interface/config/database.php.example` 为 `database.php`
    - 编辑 `database.php`，设置正确的数据库连接信息：
+
    ```php
    $db_config = [
        'host' => 'localhost',
@@ -99,26 +107,32 @@ source init_database.sql
    ];
    ```
 
-2. 启动Web服务器
-   - 使用PHP内置服务器（开发环境）：
+2. 启动 Web 服务器
+
+   - 使用 PHP 内置服务器（开发环境）：
+
    ```bash
    cd web_interface
    php -S localhost:8000
    ```
-   - 或配置Apache/Nginx（生产环境）
 
-3. 访问Web界面
+   - 或配置 Apache/Nginx（生产环境）
+
+3. 访问 Web 界面
    - 打开浏览器访问：`http://localhost:8000`
 
 ## 数据库备份
 
 1. 创建备份：
+
 ```sql
 source scripts/backup_database.sql
 ```
+
 备份文件将保存在 `backups/` 目录，文件名包含时间戳。
 
 2. 恢复备份：
+
 ```sql
 mysql -u root -p game_trade < backups/[备份文件名].sql
 ```
@@ -126,11 +140,13 @@ mysql -u root -p game_trade < backups/[备份文件名].sql
 ## 主要功能
 
 - 角色管理
+
   - 添加/编辑角色
   - 查看角色状态
   - 管理角色属性和技能
 
 - 交易系统
+
   - 商品管理
   - 交易订单
   - 市场分析
@@ -160,16 +176,17 @@ mysql -u root -p game_trade < backups/[备份文件名].sql
 
 ## 常见问题
 
-1. MySQL连接错误
-   - 检查MySQL服务是否运行
+1. MySQL 连接错误
+
+   - 检查 MySQL 服务是否运行
    - 验证用户名和密码
    - 确认数据库权限
 
-2. Web界面无法访问
-   - 检查PHP服务是否运行
+2. Web 界面无法访问
+   - 检查 PHP 服务是否运行
    - 确认端口是否被占用
-   - 查看PHP错误日志
-   - *我用的xampp，很省心，可以尝试安装
+   - 查看 PHP 错误日志
+   - \*我用的 xampp，很省心，可以尝试安装
 
 ## 许可证
 
@@ -177,4 +194,9 @@ mysql -u root -p game_trade < backups/[备份文件名].sql
 
 ## 联系方式
 
-[联系信息] 
+[联系信息]
+
+SQLite version:
+
+cd web_interface
+php -S localhost:8000

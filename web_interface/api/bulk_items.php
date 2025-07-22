@@ -1,10 +1,10 @@
 <?php
-require_once('../config/database.php');
+require_once('../config/database_sqlite.php');
 
 header('Content-Type: application/json');
 
 try {
-    $pdo = new PDO($dsn, $username, $password);
+    $pdo = getDBConnection();
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // 构建查询条件

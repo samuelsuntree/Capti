@@ -61,10 +61,10 @@ echo.
 echo [OK] Using PHP: %PHP_CMD%
 echo.
 
-REM Check if database config exists
-if not exist "..\web_interface\config\database.php" (
-    echo [ERROR] Database config file not found
-    echo Please ensure web_interface\config\database.php exists
+REM Check if SQLite database config exists
+if not exist "..\web_interface\config\database_sqlite.php" (
+    echo [ERROR] SQLite database config file not found
+    echo Please ensure web_interface\config\database_sqlite.php exists
     echo.
     pause
     exit /b 1

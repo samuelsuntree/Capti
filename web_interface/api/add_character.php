@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
-require_once '../config/database.php';
+require_once '../config/database_sqlite.php';
 
 function generateCharacterCode($characterName, $characterClass) {
     // 从角色名中提取英文名（假设格式为：中文·英文 或 职业·名字）
@@ -23,9 +23,9 @@ function generateCharacterCode($characterName, $characterClass) {
     try {
         $pdo = getDBConnection();
         
-        // 查找同类型角色数量
+        // 查找同类型角色数量 - 使用SQLite的LIKE语法
         $sql = "SELECT COUNT(*) as count FROM players 
-                WHERE character_code LIKE CONCAT(:base_code, '_%')";
+                WHERE character_code LIKE :base_code || '_%'";
         $stmt = $pdo->prepare($sql);
         $stmt->execute(['base_code' => $baseCode]);
         $result = $stmt->fetch();
@@ -57,7 +57,7 @@ try {
     // 生成角色代码
     $characterCode = generateCharacterCode($characterName, $characterClass);
     
-    // 准备SQL语句
+    // 准备SQL语句 - 使用SQLite语法
     $sql = "INSERT INTO players (
         character_code,
         character_name,

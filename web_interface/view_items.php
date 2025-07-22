@@ -110,7 +110,7 @@
             <div class="description" id="typeDescription"></div>
             <div class="item-grid" id="itemGrid">
                 <?php
-                require_once('config/database.php');
+                require_once('config/database_sqlite.php');
 
                 try {
                     $pdo = getDBConnection();
@@ -138,7 +138,7 @@
                         
                         $stmt = $pdo->query($sql);
                         while ($item = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                            $sources = json_decode($item['obtainable_from'], true);
+                            $sources = $item['obtainable_from'] ? json_decode($item['obtainable_from'], true) : null;
                             echo "<div class='item-card'>";
                             echo "<h3>{$item['commodity_name']}</h3>";
                             echo "<span class='rarity {$item['rarity']}'>{$item['rarity']}</span>";
@@ -185,8 +185,8 @@
                         
                         $stmt = $pdo->query($sql);
                         while ($item = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                            $attributes = json_decode($item['base_attributes'], true);
-                            $abilities = json_decode($item['special_abilities'], true);
+                            $attributes = $item['base_attributes'] ? json_decode($item['base_attributes'], true) : null;
+                            $abilities = $item['special_abilities'] ? json_decode($item['special_abilities'], true) : null;
                             
                             echo "<div class='item-card'>";
                             echo "<h3>{$item['equipment_name']}</h3>";

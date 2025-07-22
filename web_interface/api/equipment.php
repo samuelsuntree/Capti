@@ -1,10 +1,10 @@
 <?php
-require_once('../config/database.php');
+require_once('../config/database_sqlite.php');
 
 header('Content-Type: application/json');
 
 try {
-    $pdo = new PDO($dsn, $username, $password);
+    $pdo = getDBConnection();
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // 构建查询条件
@@ -40,7 +40,7 @@ try {
         MAX(i.enhancement_level) as max_enhancement
     FROM equipment_templates t
     JOIN equipment_types et ON t.type_id = et.type_id
-    LEFT JOIN equipment_instances i ON t.template_id = i.template_id AND i.is_broken = FALSE";
+    LEFT JOIN equipment_instances i ON t.template_id = i.template_id AND i.is_broken = 0";
 
     if (!empty($conditions)) {
         $sql .= " WHERE " . implode(" AND ", $conditions);
@@ -57,7 +57,8 @@ try {
 
     // 处理结果
     foreach ($results as &$item) {
-        $item['avg_enhancement'] = round($item['avg_enhancement'], 1);
+        $item['avg_enhancement'] = $item['avg_enhancement'] ? round($item['avg_enhancement'], 1) : 0;
+        $item['max_enhancement'] = $item['max_enhancement'] ? round($item['max_enhancement'], 1) : 0;
         $item['instances_count'] = (int)$item['instances_count'];
         $item['is_legendary'] = (bool)$item['is_legendary'];
         $item['level_requirement'] = (int)$item['level_requirement'];
