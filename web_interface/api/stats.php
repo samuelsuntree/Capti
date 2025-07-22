@@ -1,50 +1,49 @@
 <?php
-header('Content-Type: application/json; charset=utf-8');
 require_once '../config/database.php';
 
 try {
     $pdo = getDBConnection();
     
-    // 获取总角色数
-    $totalQuery = "SELECT COUNT(*) as total FROM players";
-    $totalStmt = $pdo->prepare($totalQuery);
-    $totalStmt->execute();
-    $totalResult = $totalStmt->fetch();
-    $totalCharacters = $totalResult['total'];
+    // 使用与 view_assets.php 完全相同的查询方式
+    $sql = "SELECT 
+                SUM(p.hire_cost) as total_hire_cost,
+                SUM(p.maintenance_cost) as total_maintenance_cost,
+                COUNT(DISTINCT p.player_id) as total_characters,
+                COUNT(DISTINCT e.instance_id) as total_equipment,
+                COALESCE(SUM(e.current_value), 0) as total_equipment_value,
+                (SELECT COALESCE(SUM(h.quantity * c.current_value), 0)
+                 FROM bulk_commodity_holdings h
+                 JOIN bulk_commodities c ON h.commodity_id = c.commodity_id) as total_commodity_value
+            FROM players p
+            LEFT JOIN equipment_instances e ON p.player_id = e.current_owner_id AND e.is_broken = FALSE";
+            
+    $stmt = $pdo->query($sql);
+    $totals = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    // 获取传奇角色数
-    $legendaryQuery = "SELECT COUNT(*) as legendary FROM players WHERE rarity = 'legendary'";
-    $legendaryStmt = $pdo->prepare($legendaryQuery);
-    $legendaryStmt->execute();
-    $legendaryResult = $legendaryStmt->fetch();
-    $legendaryCount = $legendaryResult['legendary'];
+    // 计算总资产
+    $totalValue = $totals['total_hire_cost'] + 
+                 $totals['total_equipment_value'] + 
+                 $totals['total_commodity_value'];
     
-    // 获取平均等级
-    $avgLevelQuery = "SELECT AVG(current_level) as avg_level FROM players";
-    $avgLevelStmt = $pdo->prepare($avgLevelQuery);
-    $avgLevelStmt->execute();
-    $avgLevelResult = $avgLevelStmt->fetch();
-    $avgLevel = round($avgLevelResult['avg_level'], 1);
+    // 返回统计数据
+    $response = [
+        'total' => $totals['total_characters'],
+        'legendary' => $totals['total_characters'], // 这里需要单独查询传奇角色数量
+        'equipment' => $totals['total_equipment'],
+        'totalValue' => number_format($totalValue, 2)
+    ];
     
-    // 获取总价值
-    $totalValueQuery = "SELECT SUM(hire_cost) as total_value FROM players";
-    $totalValueStmt = $pdo->prepare($totalValueQuery);
-    $totalValueStmt->execute();
-    $totalValueResult = $totalValueStmt->fetch();
-    $totalValue = number_format($totalValueResult['total_value'] ?? 0);
+    // 补充查询传奇角色数量
+    $sql = "SELECT COUNT(*) as legendary FROM players WHERE rarity = 'legendary'";
+    $stmt = $pdo->query($sql);
+    $legendaryCount = $stmt->fetch(PDO::FETCH_ASSOC);
+    $response['legendary'] = $legendaryCount['legendary'];
     
-    echo json_encode([
-        'success' => true,
-        'total' => $totalCharacters,
-        'legendary' => $legendaryCount,
-        'avgLevel' => $avgLevel,
-        'totalValue' => $totalValue
-    ]);
+    header('Content-Type: application/json');
+    echo json_encode($response);
     
 } catch (Exception $e) {
-    echo json_encode([
-        'success' => false,
-        'message' => '获取统计信息失败：' . $e->getMessage()
-    ]);
+    http_response_code(500);
+    echo json_encode(['error' => $e->getMessage()]);
 }
 ?> 

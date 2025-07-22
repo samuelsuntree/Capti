@@ -4,14 +4,15 @@
 -- 雇佣角色基本信息表
 CREATE TABLE players (
     player_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    character_code VARCHAR(50) UNIQUE NOT NULL,  -- 添加唯一角色代码
     character_name VARCHAR(100) NOT NULL,
     display_name VARCHAR(100),
     avatar_url VARCHAR(255),
-    character_class ENUM('warrior', 'trader', 'explorer', 'scholar', 'mystic', 'survivor') NOT NULL,
+    character_class ENUM('warrior', 'archer', 'explorer', 'scholar', 'mystic', 'survivor') NOT NULL,
     rarity ENUM('common', 'uncommon', 'rare', 'epic', 'legendary') DEFAULT 'common',
     hire_cost DECIMAL(20,2) NOT NULL DEFAULT 1000.00,
     maintenance_cost DECIMAL(20,2) NOT NULL DEFAULT 100.00,
-    current_owner_id BIGINT NULL, -- 当前雇佣该角色的真实玩家ID
+    employer_id VARCHAR(50) NULL, -- 当前雇佣该角色的玩家的trader_code
     is_available BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     hired_at TIMESTAMP NULL,
@@ -51,7 +52,7 @@ CREATE TABLE players (
     INDEX idx_character_name (character_name),
     INDEX idx_character_class (character_class),
     INDEX idx_rarity (rarity),
-    INDEX idx_owner (current_owner_id),
+    INDEX idx_employer (employer_id),
     INDEX idx_available (is_available),
     INDEX idx_level (current_level),
     INDEX idx_hire_cost (hire_cost)

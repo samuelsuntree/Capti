@@ -37,7 +37,8 @@ try {
                 p.*,
                 m.happiness, m.stress, m.motivation, m.confidence, m.fatigue, m.focus, m.team_relationship, m.reputation,
                 t.team_name, tm.role as team_role,
-                COALESCE(asset_counts.asset_count, 0) as asset_count
+                COALESCE(asset_counts.asset_count, 0) as asset_count,
+                COALESCE(equipment_value.total_value, 0) as equipment_value
             FROM players p
             LEFT JOIN player_mood m ON p.player_id = m.player_id
             LEFT JOIN team_members tm ON p.player_id = tm.player_id
@@ -47,9 +48,17 @@ try {
                 FROM player_assets 
                 GROUP BY player_id
             ) asset_counts ON p.player_id = asset_counts.player_id
+            LEFT JOIN (
+                SELECT 
+                    ei.current_owner_id as player_id,
+                    SUM(ei.current_value) as total_value
+                FROM equipment_instances ei
+                WHERE ei.owner_type = 'player'
+                GROUP BY ei.current_owner_id
+            ) equipment_value ON p.player_id = equipment_value.player_id
             " . $whereClause . "
             ORDER BY p." . $sortBy . " " . $sortOrder;
-    
+            
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
     $characters = $stmt->fetchAll();
@@ -57,6 +66,14 @@ try {
 } catch (Exception $e) {
     $error = "查询失败：" . $e->getMessage();
     $characters = [];
+}
+
+// 在PHP部分添加函数
+function getCharacterAvatar($avatar_url) {
+    if (empty($avatar_url)) {
+        return 'assets/images/default_avatar.svg';
+    }
+    return $avatar_url;
 }
 
 // 解析性格特质JSON
@@ -304,6 +321,77 @@ function parseTraits($traitsJson) {
         .scrollable-table {
             overflow-x: auto;
         }
+        .character-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 8px 0;
+        }
+
+        .character-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 2px solid rgba(0,0,0,0.1);
+        }
+
+        .character-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .character-details {
+            flex-grow: 1;
+        }
+
+        .character-name {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .character-name a {
+            color: #2c3e50;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .character-name a:hover {
+            color: #3498db;
+        }
+
+        .character-display-name {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+
+        .character-badges {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .character-level {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .character-costs {
+            font-size: 11px;
+            color: #666;
+            display: flex;
+            gap: 10px;
+        }
+
+        .cost-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
     </style>
 </head>
 <body>
@@ -344,7 +432,7 @@ function parseTraits($traitsJson) {
                     <select name="class">
                         <option value="">全部</option>
                         <option value="warrior" <?= $class === 'warrior' ? 'selected' : '' ?>>战士</option>
-                        <option value="trader" <?= $class === 'trader' ? 'selected' : '' ?>>商人</option>
+                        <option value="archer" <?= $class === 'archer' ? 'selected' : '' ?>>弓箭手</option>
                         <option value="explorer" <?= $class === 'explorer' ? 'selected' : '' ?>>探险家</option>
                         <option value="scholar" <?= $class === 'scholar' ? 'selected' : '' ?>>学者</option>
                         <option value="mystic" <?= $class === 'mystic' ? 'selected' : '' ?>>法师</option>
@@ -383,19 +471,39 @@ function parseTraits($traitsJson) {
                         </thead>
                         <tbody>
                             <?php foreach ($characters as $char): 
-                                $traits = parseTraits($char['personality_traits']);
+                                // $traits = parseTraits($char['personality_traits']); // This line is removed as per the new_code
                             ?>
                             <tr>
                                 <td><?= $char['player_id'] ?></td>
                                 <td>
-                                    <div><strong><?= htmlspecialchars($char['character_name']) ?></strong></div>
-                                    <div><?= htmlspecialchars($char['display_name']) ?></div>
-                                    <div>
-                                        <span class="rarity-badge rarity-<?= $char['rarity'] ?>"><?= ucfirst($char['rarity']) ?></span>
-                                        <span class="class-badge"><?= ucfirst($char['character_class']) ?></span>
+                                    <div class="character-info">
+                                        <div class="character-avatar">
+                                            <img src="<?= getCharacterAvatar($char['avatar_url']) ?>" 
+                                                 alt="<?= htmlspecialchars($char['character_name']) ?>"
+                                                 onerror="this.src='assets/images/default_avatar.svg'">
+                                        </div>
+                                        <div class="character-details">
+                                            <div class="character-name">
+                                                <a href="character_detail.php?code=<?= urlencode($char['character_code']) ?>">
+                                                    <?= htmlspecialchars($char['character_name']) ?>
+                                                </a>
+                                            </div>
+                                            <div class="character-display-name">
+                                                <?= htmlspecialchars($char['display_name']) ?>
+                                            </div>
+                                            <div class="character-badges">
+                                                <span class="rarity-badge rarity-<?= $char['rarity'] ?>"><?= ucfirst($char['rarity']) ?></span>
+                                                <span class="class-badge"><?= ucfirst($char['character_class']) ?></span>
+                                            </div>
+                                            <div class="character-level">
+                                                Lv.<?= $char['current_level'] ?> (<?= number_format($char['total_experience']) ?>exp)
+                                            </div>
+                                            <div class="character-costs">
+                                                <span class="cost-item">💰<?= number_format($char['hire_cost']) ?></span>
+                                                <span class="cost-item">🔧<?= number_format($char['maintenance_cost']) ?></span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div>Lv.<?= $char['current_level'] ?> (<?= $char['total_experience'] ?>exp)</div>
-                                    <div>💰<?= number_format($char['hire_cost']) ?> / 🔧<?= number_format($char['maintenance_cost']) ?></div>
                                 </td>
                                 <td>
                                     <div class="stats-grid">
@@ -461,7 +569,10 @@ function parseTraits($traitsJson) {
                                 </td>
                                 <td>
                                     <div class="traits-list">
-                                        <?php foreach ($traits as $trait): ?>
+                                        <?php 
+                                        $traits = json_decode($char['personality_traits'], true) ?? [];
+                                        foreach ($traits as $trait): 
+                                        ?>
                                             <span class="trait-tag trait-neutral"><?= htmlspecialchars($trait) ?></span>
                                         <?php endforeach; ?>
                                     </div>
@@ -471,7 +582,8 @@ function parseTraits($traitsJson) {
                                         <?= $char['is_available'] ? '✅ 可用' : '❌ 不可用' ?>
                                     </div>
                                     <div style="font-size: 10px; color: #7f8c8d;">
-                                        资产: <?= $char['asset_count'] ?>项
+                                        资产: <?= $char['asset_count'] ?>项<br>
+                                        装备价值: <?= number_format($char['equipment_value']) ?>
                                     </div>
                                 </td>
                             </tr>

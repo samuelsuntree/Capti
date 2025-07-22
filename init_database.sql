@@ -66,20 +66,23 @@ ALTER TABLE commodities ADD INDEX idx_commodity_status (commodity_status, delete
 */
 
 -- 按照依赖关系顺序加载各模块
--- 1. 先加载玩家系统（基础表）
+-- 1. 玩家系统
 source E:/resource/github/Capti/database/schema/01_players.sql
 
--- 2. 加载物品系统（依赖players表）
+-- 2. 物品系统
 source E:/resource/github/Capti/database/schema/02_item_module.sql
 
--- 3. 加载交易模块（依赖players和item_module）
-source E:/resource/github/Capti/database/schema/03_trade_module.sql
+-- 3. 交易员系统
+source E:/resource/github/Capti/database/schema/03_traders.sql
 
--- 4. 加载冒险模块（依赖前面所有模块）
-source E:/resource/github/Capti/database/schema/04_venture_module.sql
+-- 4. 交易系统
+source E:/resource/github/Capti/database/schema/04_trade_module.sql
 
--- 5. 加载交互系统（依赖所有其他模块）
-source E:/resource/github/Capti/database/schema/05_interaction_system.sql
+-- 5. 冒险系统
+source E:/resource/github/Capti/database/schema/05_venture_module.sql
+
+-- 6. 交互系统
+source E:/resource/github/Capti/database/schema/06_interaction_system.sql
 
 -- =============================================
 -- 3. 初始化游戏数据
@@ -183,7 +186,8 @@ INSERT INTO equipment_types (
 ('戒指', 'accessory', 'ring', FALSE, '增益饰品'),
 ('项链', 'accessory', 'neck', FALSE, '增益饰品'),
 ('背包', 'accessory', 'back', FALSE, '增加携带容量'),
-('采矿镐', 'tool', 'main_hand', FALSE, '用于采矿的工具');
+('采矿镐', 'tool', 'main_hand', FALSE, '用于采矿的工具'),
+('长弓', 'weapon', 'both_hands', FALSE, '远程武器，需要双手持握');
 
 -- =============================================
 -- 3.4 插入装备模板
@@ -199,6 +203,21 @@ INSERT INTO equipment_templates (
  JSON_OBJECT('damage', 10, 'speed', 1.2),
  JSON_ARRAY('锋利', '耐久', '迅捷'),
  TRUE, FALSE, NULL, NULL, NULL, NULL),
+
+-- 新增：玩家初始装备模板
+('新手短剑', 1, 'common', 80, 300, 1,
+ JSON_OBJECT('damage', 8, 'speed', 1.3),
+ JSON_ARRAY('锋利', '轻便'),
+ TRUE, FALSE, NULL,
+ '适合初学者使用的短剑，重量轻巧，易于掌握。',
+ NULL, NULL),
+
+('学徒布甲', 5, 'common', 90, 400, 1,
+ JSON_OBJECT('defense', 10, 'movement_speed', 0.15),
+ JSON_ARRAY('轻便', '灵活'),
+ TRUE, FALSE, NULL,
+ '轻便的布制护甲，适合初学者穿戴。',
+ NULL, NULL),
 
 ('精钢大剑', 2, 'uncommon', 150, 1200, 5,
  JSON_OBJECT('damage', 25, 'speed', 0.8),
@@ -237,21 +256,34 @@ INSERT INTO equipment_templates (
     'condition', '在龙穴中击败守护者',
     'required_level', 30,
     'required_reputation', 1000
- ));
+ )),
+
+-- 添加精灵长弓模板
+('月影精灵弓', (SELECT type_id FROM equipment_types WHERE type_name = '长弓'), 'epic', 100, 3000, 10,
+ JSON_OBJECT(
+    'ranged_damage', 35,
+    'accuracy', 15,
+    'attack_speed', 1.2,
+    'critical_chance', 10
+ ),
+ JSON_ARRAY('精准', '迅捷', '穿透', '月光祝福'),
+ TRUE, FALSE, NULL,
+ '由精灵工匠使用月光精华浸润的银木制成，弓身上铭刻着古老的精灵符文。在月光下，弓箭会散发出淡淡的银光。',
+ NULL, NULL);
 
 -- =============================================
 -- 3.4 插入示例雇佣角色数据 - 初始可雇佣角色
 -- =============================================
 
 INSERT INTO players (
-    character_name, display_name, character_class, rarity, hire_cost, maintenance_cost,
+    character_code, character_name, display_name, character_class, rarity, hire_cost, maintenance_cost,
     strength, vitality, agility, intelligence, faith, luck,
     loyalty, courage, patience, greed, wisdom, charisma,
     trade_skill, venture_skill, negotiation_skill, analysis_skill, leadership_skill,
     total_experience, current_level, skill_points,
     personality_traits, is_available
 ) VALUES 
-('龙血战士·阿克斯', '阿克斯', 'warrior', 'legendary', 50000, 1000,
+('AKS_WARRIOR_001', '龙血战士·阿克斯', '阿克斯', 'warrior', 'legendary', 50000, 1000,
  18, 20, 14, 12, 16, 15,
  85, 95, 60, 30, 70, 80,
  60, 95, 70, 50, 85,
@@ -259,23 +291,23 @@ INSERT INTO players (
  JSON_ARRAY('勤奋', '坚韧', '领袖气质', '冷静'),
  TRUE),
 
-('智慧商人·莉雅', '莉雅', 'trader', 'epic', 25000, 500,
- 10, 12, 16, 20, 14, 13,
- 70, 55, 85, 60, 90, 75,
- 95, 40, 90, 95, 60,
+('LIA_ARCHER_001', '精灵弓手·莉雅', '莉雅', 'archer', 'epic', 25000, 500,
+ 12, 14, 20, 16, 14, 15,      -- 提高敏捷，适合弓箭手
+ 70, 75, 85, 60, 90, 75,
+ 65, 80, 70, 85, 60,         -- 调整技能偏向
  8000, 10, 3,
- JSON_ARRAY('专注', '直觉敏锐', '学习能力强', '完美主义'),
+ JSON_ARRAY('专注', '直觉敏锐', '冷静', '完美主义'),
  TRUE),
 
-('新手商人·汤姆', '汤姆', 'trader', 'common', 3000, 150,
- 10, 10, 12, 14, 10, 11,
- 65, 50, 60, 70, 45, 55,
- 50, 20, 60, 55, 30,
+('TOM_ARCHER_001', '弓箭手·汤姆', '汤姆', 'archer', 'common', 3000, 150,
+ 12, 12, 16, 12, 10, 11,      -- 提高敏捷
+ 65, 60, 60, 50, 45, 55,
+ 40, 60, 50, 55, 30,         -- 调整技能偏向
  1200, 3, 0,
- JSON_ARRAY('勤奋', '贪婪'),
+ JSON_ARRAY('勤奋', '专注'),
  TRUE),
 
-('勇敢少女·安娜', '安娜', 'explorer', 'common', 2500, 120,
+('ANNA_EXPLORER_001', '勇敢少女·安娜', '安娜', 'explorer', 'common', 2500, 120,
  12, 14, 16, 12, 12, 10,
  70, 75, 55, 45, 50, 60,
  25, 70, 40, 45, 50,
@@ -283,12 +315,12 @@ INSERT INTO players (
  JSON_ARRAY('乐观', '冲动'),
  TRUE),
 
-('背叛者·维克', '维克', 'trader', 'uncommon', 1500, 100,
- 10, 10, 14, 16, 8, 15,
- 20, 60, 40, 80, 65, 45,
- 75, 35, 80, 70, 25,
+('VIC_WARRIOR_001', '叛剑士·维克', '维克', 'warrior', 'uncommon', 1500, 100,
+ 16, 14, 14, 10, 8, 15,       -- 提高力量，适合战士
+ 20, 70, 40, 80, 45, 45,
+ 35, 65, 50, 40, 25,         -- 调整技能偏向
  3500, 5, 1,
- JSON_ARRAY('背叛者', '贪婪', '直觉敏锐'),
+ JSON_ARRAY('背叛者', '冲动', '直觉敏锐'),
  TRUE);
 
 -- =============================================
@@ -318,16 +350,17 @@ SELECT 4, (SELECT commodity_id FROM bulk_commodities WHERE commodity_code = 'GOL
 UNION ALL
 SELECT 5, (SELECT commodity_id FROM bulk_commodities WHERE commodity_code = 'GOLD'), 300;
 
--- 创建并分配装备实例
+-- 创建并分配冒险者装备实例
 INSERT INTO equipment_instances (
-    template_id, current_owner_id, durability, current_value,
+    template_id, current_owner_id, owner_type, durability, current_value,
     attributes, creation_type, creation_source,
     power_level, awakening_level, seal_level
 ) VALUES
 -- 龙血战士·阿克斯的传说装备
 (
     (SELECT template_id FROM equipment_templates WHERE equipment_name = '龙血圣剑'),
-    1, -- 阿克斯
+    (SELECT player_id FROM players WHERE character_code = 'AKS_WARRIOR_001'), 
+    'player', -- 阿克斯
     200, -- 满耐久度
     50000,
     JSON_OBJECT(
@@ -344,27 +377,30 @@ INSERT INTO equipment_instances (
     0    -- 未被封印
 ),
 
--- 智慧商人·莉雅的装备
+-- 精灵弓手·莉雅的装备
 (
-    (SELECT template_id FROM equipment_templates WHERE equipment_name = '智慧法杖'),
-    2, -- 莉雅
-    80,
-    2000,
+    (SELECT template_id FROM equipment_templates WHERE equipment_name = '月影精灵弓'),
+    (SELECT player_id FROM players WHERE character_code = 'LIA_ARCHER_001'),
+    'player', -- 莉雅
+    100,
+    3000.00,  -- 更新为新的价值
     JSON_OBJECT(
-        'magic_damage', 35,
-        'intelligence', 7,
-        'mana_regen', 10,
-        'spell_critical', 5
+        'ranged_damage', 38,
+        'accuracy', 18,
+        'attack_speed', 1.3,
+        'critical_chance', 12,
+        'moonlight_blessing', '月光下命中率提升20%'
     ),
     'craft',
-    'master_craftsman',
+    'elven_craftmaster',
     NULL, NULL, NULL -- 非传说装备
 ),
 
--- 新手商人·汤姆的装备
+-- 弓箭手·汤姆的装备
 (
     (SELECT template_id FROM equipment_templates WHERE equipment_name = '轻型皮甲'),
-    3, -- 汤姆
+    (SELECT player_id FROM players WHERE character_code = 'TOM_ARCHER_001'),
+    'player', -- 汤姆
     120,
     800,
     JSON_OBJECT(
@@ -380,7 +416,8 @@ INSERT INTO equipment_instances (
 -- 勇敢少女·安娜的装备
 (
     (SELECT template_id FROM equipment_templates WHERE equipment_name = '探险者背包'),
-    4, -- 安娜
+    (SELECT player_id FROM players WHERE character_code = 'ANNA_EXPLORER_001'),
+    'player', -- 安娜
     200,
     1500,
     JSON_OBJECT(
@@ -393,10 +430,11 @@ INSERT INTO equipment_instances (
     NULL, NULL, NULL
 ),
 
--- 背叛者·维克的装备
+-- 叛剑士·维克的装备
 (
     (SELECT template_id FROM equipment_templates WHERE equipment_name = '铁剑'),
-    5, -- 维克
+    (SELECT player_id FROM players WHERE character_code = 'VIC_WARRIOR_001'),
+    'player', -- 维克
     100,
     500,
     JSON_OBJECT(
@@ -484,3 +522,138 @@ INSERT INTO adventure_projects (
  15000, 75000, 150000,
  60, 0.40, 180.00,
  '探索充满危险的神秘森林', 'funding');
+
+-- =============================================
+-- 3.10 插入交易员（玩家）数据 - 游戏玩家
+-- =============================================
+
+-- 1. 首先插入玩家基本信息
+INSERT INTO traders (
+    trader_code, display_name, avatar_url,
+    trade_level, trade_experience, trade_reputation,
+    total_trades, successful_trades,
+    gold_balance, total_asset_value,
+    max_hired_players, max_trade_orders, daily_trade_limit,
+    total_profit, best_trade_profit, biggest_loss
+) VALUES
+('TRADER_001', '玩家', 'assets/images/default_avatar.svg',
+ 1, 0, 50,                     -- 初始等级1，无经验，基础信誉50
+ 0, 0,                        -- 尚未进行任何交易
+ 5000.00, 5000.00,           -- 初始资金5000金币
+ 5, 10, 10000.00,            -- 初始可雇佣5人，最多10个订单，日交易限额1万
+ 0.00, 0.00, 0.00);          -- 尚无交易记录
+
+-- 保存玩家ID
+SET @trader_id = LAST_INSERT_ID();
+
+-- -- 2. 然后添加一个初始雇佣角色（新手商人·汤姆作为初始帮手）
+-- INSERT INTO trader_hired_players (
+--     trader_id, player_id, hire_cost, daily_maintenance,
+--     total_paid, performance_rating, notes
+-- ) VALUES
+-- (@trader_id, 3, 3000.00, 150.00, 3000.00, 3.5, '新手商人·汤姆 - 初始帮手');
+
+-- 3. 为玩家创建初始装备实例
+INSERT INTO equipment_instances (
+    template_id, current_owner_id, owner_type, durability, current_value,
+    attributes, creation_type, creation_source
+) VALUES
+-- 创建玩家的新手短剑实例
+(
+    (SELECT template_id FROM equipment_templates WHERE equipment_name = '新手短剑'),
+    @trader_id, 'trader',
+    80, 300.00,
+    JSON_OBJECT(
+        'damage', 8,
+        'speed', 1.3,
+        'beginner_bonus', '初学者攻击速度+5%'
+    ),
+    'system',
+    'initial_equipment'
+),
+-- 创建玩家的学徒布甲实例
+(
+    (SELECT template_id FROM equipment_templates WHERE equipment_name = '学徒布甲'),
+    @trader_id, 'trader',
+    90, 400.00,
+    JSON_OBJECT(
+        'defense', 10,
+        'movement_speed', 0.15,
+        'beginner_bonus', '初学者移动速度+5%'
+    ),
+    'system',
+    'initial_equipment'
+);
+
+-- 4. 为玩家添加初始装备到trader_items表
+INSERT INTO trader_items (
+    trader_id, equipment_instance_id, quantity, purchase_price, is_locked, notes
+) 
+SELECT 
+    @trader_id,
+    instance_id,
+    1,
+    current_value,
+    FALSE,
+    CASE 
+        WHEN template_id = (SELECT template_id FROM equipment_templates WHERE equipment_name = '新手短剑') 
+        THEN '新手短剑 - 初始装备'
+        ELSE '学徒布甲 - 初始装备'
+    END
+FROM equipment_instances 
+WHERE current_owner_id = @trader_id 
+AND owner_type = 'trader';
+
+-- 5. 为玩家添加初始大宗商品
+INSERT INTO bulk_commodity_holdings (
+    player_id, commodity_id, quantity, average_acquisition_price
+) VALUES
+-- 基础货币
+(@trader_id, 
+ (SELECT commodity_id FROM bulk_commodities WHERE commodity_code = 'GOLD'),
+ 5000.00, -- 初始5000金币
+ 1.00),   -- 购买价格（金币永远是1）
+
+-- 基础材料
+(@trader_id,
+ (SELECT commodity_id FROM bulk_commodities WHERE commodity_code = 'IRON_ORE'),
+ 50,      -- 50单位铁矿石
+ 100.00), -- 购买价格
+
+(@trader_id,
+ (SELECT commodity_id FROM bulk_commodities WHERE commodity_code = 'COPPER_ORE'),
+ 30,      -- 30单位铜矿石
+ 150.00), -- 购买价格
+
+-- 稀有材料（少量）
+(@trader_id,
+ (SELECT commodity_id FROM bulk_commodities WHERE commodity_code = 'SILVER_ORE'),
+ 5,       -- 5单位银矿石
+ 500.00), -- 购买价格
+
+-- 神秘材料（极少量）
+(@trader_id,
+ (SELECT commodity_id FROM bulk_commodities WHERE commodity_code = 'MOONLIGHT'),
+ 2,       -- 2单位月光精华
+ 5000.00), -- 购买价格
+
+(@trader_id,
+ (SELECT commodity_id FROM bulk_commodities WHERE commodity_code = 'BLOOD_JADE'),
+ 1,       -- 1单位血玉原石
+ 3000.00), -- 购买价格
+
+(@trader_id,
+ (SELECT commodity_id FROM bulk_commodities WHERE commodity_code = 'VOID_CRYSTAL'),
+ 3,       -- 3单位幽冥结晶
+ 2000.00) -- 购买价格
+ON DUPLICATE KEY UPDATE
+    quantity = VALUES(quantity),
+    average_acquisition_price = VALUES(average_acquisition_price);
+
+-- 6. 最后添加初始系统通知
+INSERT INTO trader_notifications (
+    trader_id, notification_type, title, content, is_read
+) VALUES
+(@trader_id, 'system', '欢迎来到游戏', 
+ '欢迎成为一名商人！你现在拥有5000金币的启动资金和一位助手（新手商人·汤姆）。
+  你可以通过雇佣冒险者、交易装备来赚取利润。祝你在商途上一帆风顺！', FALSE);

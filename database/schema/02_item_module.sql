@@ -286,6 +286,7 @@ CREATE TABLE equipment_instances (
     instance_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     template_id BIGINT NOT NULL,
     current_owner_id BIGINT NULL, -- NULL表示未被拥有
+    owner_type ENUM('player', 'trader', 'world') NOT NULL DEFAULT 'world', -- 拥有者类型
     durability INT NOT NULL,
     current_value DECIMAL(20,2) NOT NULL,
     attributes JSON, -- 实际属性（包含随机词缀）
@@ -305,8 +306,7 @@ CREATE TABLE equipment_instances (
     active_gem_slots INT DEFAULT 0, -- 当前已开启的宝石槽数量
     
     FOREIGN KEY (template_id) REFERENCES equipment_templates(template_id),
-    FOREIGN KEY (current_owner_id) REFERENCES players(player_id) ON DELETE SET NULL,
-    INDEX idx_current_owner (current_owner_id),
+    INDEX idx_current_owner (current_owner_id, owner_type),
     INDEX idx_creation_type (creation_type),
     INDEX idx_enhancement_level (enhancement_level)
 );

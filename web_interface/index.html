@@ -154,7 +154,9 @@
                 <li><a href="index.html" class="active">主页</a></li>
                 <li><a href="add_character.html">添加角色</a></li>
                 <li><a href="view_characters.php">查看角色</a></li>
+                <li><a href="view_teams.php">队伍信息</a></li>
                 <li><a href="view_items.php">物品系统</a></li>
+                <li><a href="view_traders.php">玩家列表</a></li>
             </ul>
         </nav>
         
@@ -170,11 +172,13 @@
                     <span class="stat-label">传奇角色</span>
                 </div>
                 <div class="stat-card">
-                    <span class="stat-number" id="totalItems">-</span>
-                    <span class="stat-label">物品总数</span>
+                    <span class="stat-number" id="totalEquipment">-</span>
+                    <span class="stat-label">装备总数</span>
                 </div>
                 <div class="stat-card">
-                    <span class="stat-number" id="totalValue">-</span>
+                    <span class="stat-number">
+                        <a href="view_assets.php" style="color: inherit; text-decoration: none; display: block;" id="totalValue">-</a>
+                    </span>
                     <span class="stat-label">总资产</span>
                 </div>
             </div>
@@ -201,9 +205,9 @@
                     
                     <div class="feature-card">
                         <div class="feature-icon">📊</div>
-                        <h3>数据统计</h3>
-                        <p>查看角色数据统计，包括队伍信息、资产分布等</p>
-                        <a href="view_characters.php" class="button manage">数据分析</a>
+                        <h3>队伍信息</h3>
+                        <p>查看队伍信息、资产分布等</p>
+                        <a href="view_teams.php" class="button manage">队伍信息</a>
                     </div>
                 </div>
             </div>
@@ -265,7 +269,7 @@
                 .then(data => {
                     document.getElementById('totalCharacters').textContent = data.total || '0';
                     document.getElementById('legendaryCount').textContent = data.legendary || '0';
-                    document.getElementById('totalItems').textContent = data.items || '0';
+                    document.getElementById('totalEquipment').textContent = data.equipment || '0';
                     document.getElementById('totalValue').textContent = data.totalValue || '0';
                 })
                 .catch(error => {
