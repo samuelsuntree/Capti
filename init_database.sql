@@ -2,7 +2,7 @@
 -- 数据库初始化主脚本
 -- =============================================
 
--- 设置字符集
+-- 设置字符集1
 SET NAMES utf8mb4;
 SET character_set_client = utf8mb4;
 SET character_set_connection = utf8mb4;
