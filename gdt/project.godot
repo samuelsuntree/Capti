@@ -10,9 +10,9 @@ config_version=5
 
 [application]
 
-config/name="captiUI"
+config/name="captigdt"
 run/main_scene="res://CaptiUI.tscn"
-config/features=PackedStringArray("4.4", "C#", "Mobile")
+config/features=PackedStringArray("4.4", "Mobile")
 config/icon="res://icon.svg"
 
 [dotnet]

@@ -2,7 +2,7 @@
 
 [ext_resource type="TileSet" uid="uid://civ5nu868m4oy" path="res://land.tres" id="1_v6nj2"]
 [ext_resource type="TileSet" uid="uid://bjnsmoc0nlp16" path="res://sheep.tres" id="2_qbyvn"]
-[ext_resource type="Script" uid="uid://bne13pw7iefqd" path="res://PlayerController.cs" id="3_pvrgd"]
+[ext_resource type="Script" uid="uid://crwhd0eum22hw" path="res://player.gd" id="3_ctu6v"]
 [ext_resource type="Texture2D" uid="uid://5shb1vt040gt" path="res://Tiny Swords (Update 010)/Factions/Knights/Troops/Warrior/Blue/Warrior_Blue.png" id="4_gd01i"]
 [ext_resource type="Texture2D" uid="uid://vd02whk1w7g2" path="res://Tiny Swords (Update 010)/Factions/Knights/Troops/Pawn/Yellow/Pawn_Yellow.png" id="5_ctu6v"]
 [ext_resource type="Texture2D" uid="uid://cavcrqc04nvt2" path="res://Tiny Swords (Update 010)/Resources/Trees/Tree.png" id="6_ctu6v"]
@@ -331,7 +331,7 @@ z_as_relative = false
 position = Vector2(1121, 301)
 collision_layer = 2
 collision_mask = 3
-script = ExtResource("3_pvrgd")
+script = ExtResource("3_ctu6v")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="YSort_Container/Player"]
 position = Vector2(0, -30)
