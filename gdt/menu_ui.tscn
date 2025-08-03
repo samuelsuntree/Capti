@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://gwvu7ynwagfp"]
 
 [ext_resource type="Texture2D" uid="uid://du8lnvydpgxy4" path="res://Tiny Swords (Update 010)/UI/Banners/Carved_Regular.png" id="2_0n2sb"]
-[ext_resource type="Script" uid="uid://j76gjc0h5obe" path="res://menu_ui.gd" id="menu_script"]
+[ext_resource type="Script" path="res://menu_ui.gd" id="menu_script"]
 
 [node name="MenuUI" type="Control"]
 layout_mode = 3

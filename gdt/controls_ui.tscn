@@ -1,0 +1,63 @@
+[gd_scene load_steps=2 format=3 uid="uid://controls_ui"]
+
+[ext_resource type="Script" path="res://controls_ui.gd" id="controls_script"]
+
+[node name="ControlsUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("controls_script")
+
+[node name="ControlsPanel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -250.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = 150.0
+grow_horizontal = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ControlsPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="ControlsPanel/VBoxContainer"]
+layout_mode = 2
+text = "操作说明"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="ControlsPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="MovementLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
+layout_mode = 2
+text = "WASD - 移动"
+autowrap_mode = 3
+
+[node name="AttackLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
+layout_mode = 2
+text = "空格 - 攻击"
+autowrap_mode = 3
+
+[node name="InteractLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
+layout_mode = 2
+text = "E - 交互"
+autowrap_mode = 3
+
+[node name="MenuLabel" type="Label" parent="ControlsPanel/VBoxContainer"]
+layout_mode = 2
+text = "ESC - 关闭菜单"
+autowrap_mode = 3 
