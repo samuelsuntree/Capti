@@ -9,6 +9,8 @@ config/database.json
 *.dump
 backups/
 oldscripts/
+gdt/res/
+gdt/builds/
 
 # 日志文件
 *.log

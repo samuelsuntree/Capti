@@ -1,6 +1,7 @@
 # 操作说明UI脚本
 extends Control
 
+var database : SQLite
 # _ready()函数在节点进入场景树时被调用一次
 func _ready():
 	print("操作说明UI已加载!")
@@ -17,3 +18,7 @@ func _ready():
 	
 	print("操作说明UI: 已设置z_index为999，确保在最顶层显示")
 	print("操作说明UI: 现在跟随摄像机移动，显示在玩家视野左上角") 
+	#database = SQLite.new()
+	#database.path="res://sqlite_database/game_trade.db"
+	#database.open_db()
+	#print(database.select_rows("adventure_projects","project_id > 0",["project_name"]))

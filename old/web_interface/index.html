@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏角色管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .nav {
+            background: #34495e;
+            padding: 0;
+        }
+        .nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+        }
+        .nav li {
+            margin: 0 5px;
+        }
+        .nav a {
+            display: block;
+            padding: 15px 25px;
+            color: white;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        .nav a:hover, .nav a.active {
+            background: #2c3e50;
+        }
+        .content {
+            padding: 40px;
+        }
+        .card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        .button {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px 5px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        .button.add {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        }
+        .button.view {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        }
+        .button.manage {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            display: block;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 游戏角色管理系统</h1>
+            <p>轻松管理您的游戏角色数据</p>
+        </div>
+        
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html" class="active">主页</a></li>
+                <li><a href="add_character.html">添加角色</a></li>
+                <li><a href="view_characters.php">查看角色</a></li>
+                <li><a href="view_teams.php">队伍信息</a></li>
+                <li><a href="view_items.php">物品系统</a></li>
+                <li><a href="view_traders.php">玩家列表</a></li>
+            </ul>
+        </nav>
+        
+        <div class="content">
+            <!-- 统计信息 -->
+            <div class="stats">
+                <div class="stat-card">
+                    <span class="stat-number" id="totalCharacters">-</span>
+                    <span class="stat-label">总角色数</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="legendaryCount">-</span>
+                    <span class="stat-label">传奇角色</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="totalEquipment">-</span>
+                    <span class="stat-label">装备总数</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">
+                        <a href="view_assets.php" style="color: inherit; text-decoration: none; display: block;" id="totalValue">-</a>
+                    </span>
+                    <span class="stat-label">总资产</span>
+                </div>
+            </div>
+            
+            <!-- 角色系统 -->
+            <div class="card">
+                <h2>角色系统</h2>
+                <p>这是一个简单易用的Web界面，用于管理您的游戏角色数据。无需SQL知识，即可轻松操作数据库。</p>
+                
+                <div class="features">
+                    <div class="feature-card">
+                        <div class="feature-icon">➕</div>
+                        <h3>添加角色</h3>
+                        <p>通过简单的表单添加新角色，自动生成所需的数据结构</p>
+                        <a href="add_character.html" class="button add">开始添加</a>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">👁️</div>
+                        <h3>查看角色</h3>
+                        <p>浏览所有角色信息，支持搜索和筛选功能</p>
+                        <a href="view_characters.php" class="button view">查看角色</a>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>队伍信息</h3>
+                        <p>查看队伍信息、资产分布等</p>
+                        <a href="view_teams.php" class="button manage">队伍信息</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 物品系统 -->
+            <div class="card">
+                <h2>物品系统</h2>
+                <p>完整的物品管理系统，支持多种物品类型和复杂的物品属性。</p>
+                
+                <div class="features">
+                    <div class="feature-card">
+                        <div class="feature-icon">💰</div>
+                        <h3>大宗货品</h3>
+                        <p>包括货币、矿石、宝石、材料等可堆叠物品<br>支持不同稀有度和类别</p>
+                        <a href="view_items.php?type=bulk" class="button view">查看大宗货品</a>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">⚔️</div>
+                        <h3>装备系统</h3>
+                        <p>武器、防具、饰品和工具<br>支持装备强化和属性系统</p>
+                        <a href="view_items.php?type=equipment" class="button view">查看装备</a>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🌟</div>
+                        <h3>传说装备</h3>
+                        <p>独特的传说装备系统<br>包含觉醒和封印机制</p>
+                        <a href="view_items.php?type=legendary" class="button view">查看传说装备</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>系统功能</h2>
+                <ul style="line-height: 2; margin-left: 20px;">
+                    <li>✅ 可视化添加角色（无需SQL）</li>
+                    <li>✅ 自动生成角色属性</li>
+                    <li>✅ 表格式查看所有角色</li>
+                    <li>✅ 搜索和筛选功能</li>
+                    <li>✅ 编辑角色信息</li>
+                    <li>✅ 删除角色</li>
+                    <li>✅ 实时统计信息</li>
+                    <li>✅ 响应式设计</li>
+                    <li>✅ 物品强化系统</li>
+                    <li>✅ 装备历史追踪</li>
+                    <li>✅ 物品交易记录</li>
+                    <li>✅ 容器管理系统</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 加载统计信息
+        function loadStats() {
+            fetch('api/stats.php')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('totalCharacters').textContent = data.total || '0';
+                    document.getElementById('legendaryCount').textContent = data.legendary || '0';
+                    document.getElementById('totalEquipment').textContent = data.equipment || '0';
+                    document.getElementById('totalValue').textContent = data.totalValue || '0';
+                })
+                .catch(error => {
+                    console.error('Error loading stats:', error);
+                });
+        }
+        
+        // 页面加载时获取统计信息
+        window.onload = loadStats;
+    </script>
+</body>
+</html> 

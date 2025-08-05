@@ -1,0 +1,15 @@
+# 冒险项目模板 - 请按照格式填写，不要修改表头
+# 说明：
+# - 项目类型：mining(采矿), dungeon(地牢), exploration(探索), escort(护送), investigation(调查), special(特殊)
+# - 难度选项：easy(简单), normal(普通), hard(困难), extreme(极限), legendary(传说)
+# - 专精要求：combat(战斗), mining(采矿), exploration(探索), magic(魔法), stealth(潜行), survival(生存)，留空表示无特殊要求
+# - 状态选项：funding(筹资中), ready(准备就绪), in_progress(进行中), completed(已完成), failed(失败), cancelled(取消)
+# - 风险等级：0.1-0.9，数值越高风险越大
+# - 预期回报率：建议50-300之间
+
+项目名称,项目类型,难度,所需队伍规模,专精要求,基础投资,最大投资,投资目标,预期时长(小时),风险等级,预期回报率,地点,项目描述,状态
+失落神庙探索,exploration,hard,5,exploration,25000,120000,250000,96,0.45,220.00,迷雾森林深处,探索古老文明遗留的神秘神庙，寻找传说中的神器,funding
+水晶矿脉开采,mining,normal,4,mining,15000,80000,160000,72,0.25,150.00,北方山脉,开采新发现的魔法水晶矿脉，产量丰富,funding
+巨龙巢穴突袭,dungeon,extreme,8,combat,50000,200000,400000,120,0.70,350.00,火山口,深入传说巨龙的巢穴，夺取无价之宝,funding
+商队护送任务,escort,easy,3,,8000,30000,60000,48,0.15,80.00,商道沿线,护送贵重商品穿越危险地带,funding
+古卷调查任务,investigation,normal,2,magic,12000,50000,100000,60,0.30,120.00,废弃图书馆,调查失传魔法古卷的下落,funding 

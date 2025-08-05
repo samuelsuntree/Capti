@@ -1,15 +1,17 @@
-[gd_scene load_steps=73 format=4 uid="uid://dintlwximwn4n"]
+[gd_scene load_steps=75 format=4 uid="uid://dintlwximwn4n"]
 
 [ext_resource type="TileSet" uid="uid://civ5nu868m4oy" path="res://land.tres" id="1_v6nj2"]
 [ext_resource type="TileSet" uid="uid://bjnsmoc0nlp16" path="res://sheep.tres" id="2_qbyvn"]
+[ext_resource type="Script" uid="uid://cy21jxa6nbx6g" path="res://button_sql.gd" id="3_bter7"]
 [ext_resource type="Script" uid="uid://crwhd0eum22hw" path="res://player.gd" id="3_ctu6v"]
 [ext_resource type="Texture2D" uid="uid://5shb1vt040gt" path="res://Tiny Swords (Update 010)/Factions/Knights/Troops/Warrior/Blue/Warrior_Blue.png" id="4_gd01i"]
 [ext_resource type="Texture2D" uid="uid://vd02whk1w7g2" path="res://Tiny Swords (Update 010)/Factions/Knights/Troops/Pawn/Yellow/Pawn_Yellow.png" id="5_ctu6v"]
 [ext_resource type="Texture2D" uid="uid://cavcrqc04nvt2" path="res://Tiny Swords (Update 010)/Resources/Trees/Tree.png" id="6_ctu6v"]
-[ext_resource type="Script" path="res://attack_component.gd" id="attack_component_script"]
+[ext_resource type="Script" uid="uid://b535l2462rtvi" path="res://attack_component.gd" id="attack_component_script"]
 [ext_resource type="Script" uid="uid://dpf744skp25t4" path="res://controls_ui.gd" id="controls_script"]
-[ext_resource type="Script" path="res://interaction_component.gd" id="interaction_component_script"]
-[ext_resource type="Script" path="res://seller.gd" id="seller_script"]
+[ext_resource type="Script" uid="uid://copgyxlchb7qp" path="res://interaction_component.gd" id="interaction_component_script"]
+[ext_resource type="Script" uid="uid://dsox5hqojqt0u" path="res://seller.gd" id="seller_script"]
+[ext_resource type="Script" uid="uid://b8x70a00a1b2c" path="res://welcome_ui.gd" id="welcome_script"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_q8q4w"]
 atlas = ExtResource("4_gd01i")
@@ -411,6 +413,7 @@ atlas = ExtResource("6_ctu6v")
 region = Rect2(576, 0, 192, 192)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_7hg4v"]
+resource_local_to_scene = true
 animations = [{
 "frames": [{
 "duration": 1.0,
@@ -491,6 +494,36 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("controls_script")
 
+[node name="WelcomePanel" type="Panel" parent="ControlsUI"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 161.0
+offset_top = -206.0
+offset_right = 775.0
+offset_bottom = 114.0
+grow_horizontal = 2
+script = ExtResource("welcome_script")
+
+[node name="WelcomeLabel" type="RichTextLabel" parent="ControlsUI/WelcomePanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+bbcode_enabled = true
+text = "[center][b]欢迎来到Capti游戏世界！[/b][/center]
+
+[center]这是一个充满冒险和挑战的奇幻世界。在这里，你可以自由探索广阔的地图，与NPC进行互动，体验丰富的游戏内容。[/center]
+
+[center]目前可用的冒险有：[/center]"
+fit_content = true
+
 [node name="ControlsPanel" type="Panel" parent="ControlsUI"]
 z_index = 610
 layout_mode = 1
@@ -526,22 +559,44 @@ layout_mode = 2
 [node name="MovementLabel" type="Label" parent="ControlsUI/ControlsPanel/VBoxContainer"]
 layout_mode = 2
 text = "WASD - 移动"
-autowrap_mode = 3
+horizontal_alignment = 1
 
 [node name="AttackLabel" type="Label" parent="ControlsUI/ControlsPanel/VBoxContainer"]
 layout_mode = 2
 text = "空格 - 攻击"
-autowrap_mode = 3
+horizontal_alignment = 1
 
 [node name="InteractLabel" type="Label" parent="ControlsUI/ControlsPanel/VBoxContainer"]
 layout_mode = 2
 text = "E - 交互"
-autowrap_mode = 3
+horizontal_alignment = 1
 
 [node name="MenuLabel" type="Label" parent="ControlsUI/ControlsPanel/VBoxContainer"]
 layout_mode = 2
 text = "ESC - 关闭菜单"
-autowrap_mode = 3
+horizontal_alignment = 1
+
+[node name="buttonSQL" type="Control" parent="ControlsUI"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("3_bter7")
+
+[node name="ReadData" type="Button" parent="ControlsUI/buttonSQL"]
+layout_mode = 0
+offset_left = 804.0
+offset_top = -90.0
+offset_right = 891.0
+offset_bottom = -61.0
+text = "读取sql"
+
+[node name="SelectData" type="Button" parent="ControlsUI/buttonSQL"]
+layout_mode = 0
+offset_left = 807.0
+offset_top = -44.0
+offset_right = 894.0
+offset_bottom = -13.0
+text = "增加数据"
 
 [node name="Map" type="Node2D" parent="."]
 z_as_relative = false
@@ -604,39 +659,42 @@ metadata/_edit_use_anchors_ = true
 [node name="Tree1" type="AnimatedSprite2D" parent="YSort_Container"]
 position = Vector2(795, 564)
 sprite_frames = SubResource("SpriteFrames_7hg4v")
-frame_progress = 0.204052
+autoplay = "default"
+frame_progress = 0.0939135
 offset = Vector2(0, -64)
 
 [node name="StaticBody2D" type="StaticBody2D" parent="YSort_Container/Tree1"]
-position = Vector2(-795, -564)
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="YSort_Container/Tree1/StaticBody2D"]
+position = Vector2(-795, -564)
 build_mode = 1
 polygon = PackedVector2Array(794, 548, 774, 544, 763, 533, 759, 517, 775, 498, 790, 491, 808, 493, 822, 503, 831, 514, 831, 531, 819, 542, 806, 547)
 
 [node name="Tree3" type="AnimatedSprite2D" parent="YSort_Container"]
 position = Vector2(979, 366)
 sprite_frames = SubResource("SpriteFrames_7hg4v")
-frame_progress = 0.972873
+autoplay = "default"
+frame_progress = 0.201197
 offset = Vector2(0, -64)
 
 [node name="StaticBody2D" type="StaticBody2D" parent="YSort_Container/Tree3"]
-position = Vector2(-795, -564)
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="YSort_Container/Tree3/StaticBody2D"]
+position = Vector2(-795, -564)
 build_mode = 1
 polygon = PackedVector2Array(794, 548, 774, 544, 763, 533, 759, 517, 775, 498, 790, 491, 808, 493, 822, 503, 831, 514, 831, 531, 819, 542, 806, 547)
 
 [node name="Tree2" type="AnimatedSprite2D" parent="YSort_Container"]
 position = Vector2(633, 311)
 sprite_frames = SubResource("SpriteFrames_7hg4v")
+autoplay = "default"
 frame_progress = 0.393445
 offset = Vector2(0, -64)
 
 [node name="StaticBody2D" type="StaticBody2D" parent="YSort_Container/Tree2"]
-position = Vector2(-795, -564)
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="YSort_Container/Tree2/StaticBody2D"]
+position = Vector2(-795, -564)
 build_mode = 1
 polygon = PackedVector2Array(794, 548, 774, 544, 763, 533, 759, 517, 775, 498, 790, 491, 808, 493, 822, 503, 831, 514, 831, 531, 819, 542, 806, 547)
 
@@ -658,3 +716,6 @@ animation = &"idle"
 z_as_relative = false
 position = Vector2(0, -30)
 shape = SubResource("CapsuleShape2D_ctu6v")
+
+[connection signal="button_down" from="ControlsUI/buttonSQL/ReadData" to="ControlsUI/buttonSQL" method="_on_read_data_button_down"]
+[connection signal="button_down" from="ControlsUI/buttonSQL/SelectData" to="ControlsUI/buttonSQL" method="_on_select_data_button_down"]

@@ -1,0 +1,66 @@
+{
+  "development": {
+    "host": "localhost",
+    "port": 3306,
+    "database": "game_trade",
+    "username": "game_user",
+    "password": "game_pass_2024",
+    "charset": "utf8mb4",
+    "collation": "utf8mb4_unicode_ci",
+    "timezone": "+08:00",
+    "pool": {
+      "min": 2,
+      "max": 10,
+      "acquire": 30000,
+      "idle": 10000
+    }
+  },
+  "production": {
+    "host": "${DB_HOST}",
+    "port": "${DB_PORT}",
+    "database": "${DB_NAME}",
+    "username": "${DB_USER}",
+    "password": "${DB_PASSWORD}",
+    "charset": "utf8mb4",
+    "collation": "utf8mb4_unicode_ci",
+    "timezone": "+08:00",
+    "pool": {
+      "min": 5,
+      "max": 20,
+      "acquire": 30000,
+      "idle": 10000
+    }
+  },
+  "test": {
+    "host": "localhost",
+    "port": 3306,
+    "database": "game_trade_test",
+    "username": "game_user",
+    "password": "game_pass_2024",
+    "charset": "utf8mb4",
+    "collation": "utf8mb4_unicode_ci",
+    "timezone": "+08:00",
+    "pool": {
+      "min": 1,
+      "max": 5,
+      "acquire": 30000,
+      "idle": 10000
+    }
+  },
+  "readonly": {
+    "host": "localhost",
+    "port": 3306,
+    "database": "game_trade",
+    "username": "game_readonly",
+    "password": "readonly_pass_2024",
+    "charset": "utf8mb4",
+    "collation": "utf8mb4_unicode_ci",
+    "timezone": "+08:00",
+    "pool": {
+      "min": 1,
+      "max": 5,
+      "acquire": 30000,
+      "idle": 10000
+    }
+  }
+} 
